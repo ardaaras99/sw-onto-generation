@@ -11,6 +11,7 @@ class BaseNode(BaseModel):
         LLMHelperProps.__name__: LLMHelperProps(description="", cardinality=False),
     }
     reason: str = Field(description="Bu nodeu çıkarırken nasıl bir mantık kullandın")
+    refernce_text: str = Field(description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz")
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
