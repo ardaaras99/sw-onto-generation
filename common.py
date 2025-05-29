@@ -1,11 +1,30 @@
 # %%
-from pydantic import BaseModel, Field
+from typing import ClassVar
 
-from sw_onto_generation.base import BaseNode
+from pydantic import BaseModel, Field
+from rich import print as rprint
+
+from base import BaseNode, DGraphProps, FieldProp, LLMHelperProps, NodeProp, SearchType
 
 
 class GeneralDocumentInfo(BaseNode):
+    update_dict: ClassVar[dict] = {
+        DGraphProps.__name__: DGraphProps(
+            node_prop=NodeProp(dgraph_type="generalDocumentInfo"),
+            field_props=[FieldProp(field_name="baslik", search_type=SearchType.VECTOR)],
+        ),
+        LLMHelperProps.__name__: LLMHelperProps(
+            description="Döküman hakkinda genel bilgileri tanımlar, sozlesme ismi veya basligi en onemli bilgidir. Her sozlesmede mutlak bir sekilde bulunmalidir.",
+        ),
+    }
     baslik: str = Field(description="Belgenin başlığı")
+
+
+# rprint("BaseNode model config")
+# rprint(BaseNode.model_config)
+# rprint("GeneralDocumentInfo model config")
+# rprint(GeneralDocumentInfo.model_config)
+# %%
 
 
 class Adres(BaseModel):
