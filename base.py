@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
-from rich import print as rprint
 
-from sw_onto_generation.configs import DGraphProps, FieldProp, LLMHelperProps, NodeProp, SearchType
+from sw_onto_generation.configs import DGraphProps, FieldProp, LLMHelperProps, SearchType
 
 
 class BaseNode(BaseModel):

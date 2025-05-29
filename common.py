@@ -2,7 +2,6 @@
 from typing import ClassVar
 
 from pydantic import BaseModel, Field
-from rich import print as rprint
 
 from base import BaseNode, DGraphProps, FieldProp, LLMHelperProps, NodeProp, SearchType
 

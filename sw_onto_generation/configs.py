@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from enum import StrEnum
 
-from pydantic import BaseModel
-
 
 class SearchType(StrEnum):
     EXACT = "exact"
