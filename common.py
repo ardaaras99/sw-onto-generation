@@ -3,7 +3,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from base import BaseNode, DGraphProps, FieldProp, LLMHelperProps, NodeProp, SearchType
+from base import BaseNode
+from sw_onto_generation.configs import DGraphProps, FieldProp, LLMHelperProps, NodeProp, SearchType
 
 
 class GeneralDocumentInfo(BaseNode):
