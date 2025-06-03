@@ -24,6 +24,7 @@ class NodeModelConfig(BaseModel):
 
 class RelationModelConfig(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
+    edge_type: str | None = Field(default=None, description="Type of the edge in Nebula Graph")
     description: str | None = Field(default=None, description="LLMe Relation'u tanıtmak için kullanılır")
     extra_fields: list[FieldInfo] | None = Field(default=None, description="Relation'a eklenecek ekstra field'lar")
     field_configs: list[FieldConfig] | None = Field(default=None, description="Nebula graph'de relation'un field'larının config'i, hangi field'ların index type'ı ne olacak")
