@@ -1,6 +1,7 @@
 from enum import StrEnum
 
 from pydantic import BaseModel, Field
+from pydantic.fields import FieldInfo
 
 
 class NebulaIndexType(StrEnum):
@@ -22,6 +23,7 @@ class NodeModelConfig(BaseModel):
 
 
 class RelationModelConfig(BaseModel):
-    relation_type: str = Field(description="Nebula graph'de relation'un adı")
-    description: str = Field(description="LLMe Relation'u tanıtmak için kullanılır")
+    model_config = {"arbitrary_types_allowed": True}
+    description: str | None = Field(default=None, description="LLMe Relation'u tanıtmak için kullanılır")
+    extra_fields: list[FieldInfo] | None = Field(default=None, description="Relation'a eklenecek ekstra field'lar")
     field_configs: list[FieldConfig] | None = Field(default=None, description="Nebula graph'de relation'un field'larının config'i, hangi field'ların index type'ı ne olacak")

@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from sw_onto_generation.Base.configs import FieldConfig, NebulaIndexType, NodeModelConfig
+from sw_onto_generation.Ontologies.Base.configs import FieldConfig, NebulaIndexType, NodeModelConfig
 
 
 class BaseNode(BaseModel):
