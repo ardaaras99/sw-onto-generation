@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
@@ -10,9 +11,21 @@ class LLMHelperPropsForRelation:
     description: str | None = None
 
 
-class BaseRelation(BaseModel):
-    model_config = {LLMHelperPropsForRelation.__name__: LLMHelperPropsForRelation(description="")}
+class NebulaIndexType(StrEnum):
+    EXACT = "exact"
+    FULLTEXT = "fulltext"
+    PARTIAL = "partial"
+    FUZZY = "fuzzy"
+    VECTOR = "vector"
 
+
+@dataclass
+class GraphPropsForRelation:
+    relation_type: str | None = None
+    index_type: NebulaIndexType | None = None
+
+
+class BaseRelation(BaseModel):
     source_node: BaseNode
     target_node: BaseNode
     reason: str = Field(description="Bu relationi çıkarırken nasıl bir mantık kullandın")
