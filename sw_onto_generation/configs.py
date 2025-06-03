@@ -8,6 +8,7 @@ class SearchType(StrEnum):
     PARTIAL = "partial"
     FUZZY = "fuzzy"
     VECTOR = "vector"
+    TERM = "term"
 
 
 @dataclass
@@ -23,7 +24,7 @@ class NodeProp:
 
 @dataclass
 class DGraphProps:
-    node_prop: NodeProp | None = None
+    node_prop: list[NodeProp] | None = None
     field_props: list[FieldProp] | None = None
 
 

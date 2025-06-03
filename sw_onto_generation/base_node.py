@@ -11,18 +11,16 @@ class BaseNode(BaseModel):
         LLMHelperProps.__name__: LLMHelperProps(description="", cardinality=False),
     }
     reason: str = Field(description="Bu nodeu çıkarırken nasıl bir mantık kullandın")
-    refernce_text: str = Field(description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz")
+    reference_text: str = Field(description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz")
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        # Store the update_dict for later processing
         if hasattr(cls, "update_dict"):
             cls._pending_update_dict = cls.update_dict
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
         super().__pydantic_init_subclass__(**kwargs)
-        # Apply the pending update_dict after Pydantic has fully processed the class
         if hasattr(cls, "_pending_update_dict"):
             cls.modify_model_config(cls._pending_update_dict)
             delattr(cls, "_pending_update_dict")
@@ -60,7 +58,7 @@ class BaseNode(BaseModel):
                 cls.model_config[u_key] = u_val
             else:
                 if u_key == LLMHelperProps.__name__:
-                    val = cls.model_config[u_key]
+                    val: LLMHelperProps = cls.model_config[u_key]
                     # description'ı parenttan al ve ekle
                     u_val.description = f"{val.description}\n{u_val.description}"
                     # cardinality provide edilmemisse parenttan al
