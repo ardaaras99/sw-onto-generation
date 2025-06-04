@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -16,11 +16,11 @@ class BaseNode(BaseModel):
     reason: str = Field(description="Bu nodeu çıkarırken nasıl bir mantık kullandın")
     reference_text: str = Field(description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz")
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
 
     @classmethod
-    def __pydantic_init_subclass__(cls, **kwargs):
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
         super().__pydantic_init_subclass__(**kwargs)
         # Only run for subclasses, not BaseNode itself
         if cls is BaseNode:

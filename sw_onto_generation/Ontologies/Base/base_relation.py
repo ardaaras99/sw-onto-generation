@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -14,7 +14,7 @@ class BaseRelation(BaseModel):
     reason: str = Field(description="Bu relationi çıkarırken nasıl bir mantık kullandın")
 
     @classmethod
-    def __pydantic_init_subclass__(cls, **kwargs):
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
         super().__pydantic_init_subclass__(**kwargs)
         # Only run for subclasses, not BaseNode itself
         if cls is BaseRelation:
