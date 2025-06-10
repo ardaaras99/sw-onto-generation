@@ -47,24 +47,27 @@ class Demirbas(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         node_tag="Demirbas",
         description="""
-            Sozlesmede demirbas olarak belirtilen esya, donanim, malzeme, mobilya, klima, mutfak esyasi, geraj esyasi etc. gibi seyler.
+            Sozlesmede demirbas olarak belirtilen esya, donanim, malzeme, mobilya, klima, mutfak esyasi, garaj esyasi etc. gibi seyler.
+            kiracinin sadece kullanabilecegi ama mulkiyeti mulk sahibinde bulunan ve sozlesmede belirtilen esyalar.Birden fazla olabilir.
+            madde madde belirtilebilecegi gibi virgule ayrilmis bir metin ile de belirtilebilir. her birini ayri bir node olarak cikarmani istiyorum.
             """,
         cardinality=True,
     )
-    demirbas_ismi: str = Field(description="")
+    demirbas_ismi: str | None = Field(description="Demirbasin adi, ozellikleri, markasi, modeli gibi bilgiler icerebilir")
 
 
-class Demisbaslar(BaseNode):
+class Demirbaslar(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        node_tag="Demisbaslar",
+        node_tag="Demirbaslar",
         description="""
                 Kira konusu mulk icinde bulunan ve kiracinin sadece kullanabilecegi ama mulkiyeti mulk sahibinde bulunan ve sozlesmede belirtilen esyalar.Birden fazla olabilir. 
-                madde madde belirtilebilecegi gibi virgule ayrilmis bir metin ile de belirtilebilir. Bunu liste halinde getirmeni istiyorum. 
+                en az bir tane varsa true olur yoksa yaratilmaz.
+                demirbaslar madde madde belirtilebilecegi gibi virgule ayrilmis bir metin ile de belirtilebilir.
                 """,
         cardinality=False,
     )
 
-    demirbaslar: list[Demirbas] | None = Field(description="Kiralan mulk icin sozlesmede belirtilen demisbaslarin listesi.")
+    demirbas_var: bool | None = Field(description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?.")
 
 
 class KiraBedeli(BaseNode):

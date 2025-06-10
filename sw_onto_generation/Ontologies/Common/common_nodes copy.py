@@ -138,7 +138,7 @@ class SozlesmeKonu(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         node_tag="SozlesmeKonu",
         description="""
-        Bu sozlesmenin ana konusunu tanimlar. Genelde ayri bir madde olarak belirtilir. 'Amac', 'Kapsam', 'Konu', 'Sozlesmenin konusu', 'Is tanimi' gibi ifadelerle baslar.
+        Bu sozlesmenin ana konusunu tanimlar. Genelde ayri bir madde olarak belirtilir. 'Amac', 'Kapsam', 'Konu', 'Sozlesmenin konusu' gibi ifadelerle baslar.
         Sozlesmenin konusu, sozlesmenin amacini ve kapsamini belirler. Sozlesmenin ne ile ilgili oldugunu, hangi hizmetlerin veya urunlerin saglanacagini burada belirtilir.
         Ozellikle belirtilmemisse sozlesmenin 1-3 cumlelik ozeti ile tanimlanabilir.
         """,
@@ -199,49 +199,10 @@ class UyusmazlikCozumYeri(BaseNode):
         node_tag="UyusmazlikCozumYeri",
         description="""
         Herhangi bir uyusmazlik halinde taraflarin hangi mahkemeye veya arabulucuya basvuracagini belirler.
-        Genellikle sozlesmenin sonunda belirtilir. 'Anlasmazliklarin Cozumu', 'Uyuşmazlık Çözüm Yeri', 'Uyuşmazlık Mahkemesi', 'Arabuluculuk Merkezi' gibi ifadelerle baslar.
+        Genellikle sozlesmenin sonunda belirtilir. 'Uyuşmazlık Çözüm Yeri', 'Uyuşmazlık Mahkemesi', 'Arabuluculuk Merkezi' gibi ifadelerle baslar.
         """,
         cardinality=False,
     )
     uyusmazlik_cozum_yeri: str | None = Field(
         default=None, description="Uyuşmazlık çözüm yeri, uyuşmazlık halinde başvurulacak mahkeme veya arabuluculuk merkezi. Örneğin 'İstanbul Mahkemeleri', 'Ankara Arabuluculuk Merkezi' gibi."
     )
-
-
-class Kefil(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        node_tag="Kefil",
-        description="""
-    Bu sozlesmeye kefil olan kisiyi veya sirketi tanimlar. Kefil, sozlesmenin yerine getirilmemesi durumunda sorumluluk alir.
-    Kefil, Insan veya Sirket olabilir. Kefil, sözleşmenin tarafı değildir ancak sözleşmenin yerine getirilmemesi durumunda sorumluluk alır.
-    kefil in turleri vardir. En onemlisi muteselsil kefildir. Muteselsil kefil, borcun tamamindan sorumludur ve borcun bir kismi icin kefil degildir.
-    """,
-        cardinality=True,
-    )
-    kefil: Insan | Sirket | None = Field(
-        default=None,
-        description="kefil olan sirketin veya da insanin adi veya unvani, VKN veya TCKN gibi kimlik bilgileri ile birlikte tanimlanabilir. Ornegin 'Ahmet Yılmaz', 'ABC Sirketi', '1234567890' gibi.",
-    )
-    kefil_turu: str | None = Field(default=None, description="Kefilin türü, örneğin 'Müteselsil Kefil', 'Sınırlı Kefil', 'Kefil' gibi.")
-
-
-class Ek(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        node_tag="Ek",
-        description="""
-        Sozlesmenin icerisnde belirtilen ekler. Ekler, sözleşmenin ayrıntılarını veya ek belgelerini içerebilir. Ekler, sözleşmenin bir parçası olarak kabul edilir. Genelde 'ekler', 'sozlesmenin ekleri', 'ek-1', 'ek-2' gibi ifadelerle başlar.
-        """,
-        cardinality=True,
-    )
-    ek_aciklama: str = Field(default="", description="sozlemede belirtilen ekin aciklamasi. ")
-
-
-class Ekler(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        node_tag="Ekler",
-        description="""
-        Sozlesmenin icerisinde herhangi bir Ek olup olmadigini belirler. En az bir Ek varsa true olur yoksa bu node yaratilmaz.
-        """,
-        cardinality=False,
-    )
-    ek_var: bool | None = Field(default=False, description="En az bir ek varsa True, yoksa zaten yaratilmaz.")

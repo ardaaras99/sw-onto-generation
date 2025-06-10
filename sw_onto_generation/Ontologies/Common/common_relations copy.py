@@ -1,12 +1,11 @@
 from typing import ClassVar
 
+from pydantic.fields import FieldInfo
+
 from sw_onto_generation.Ontologies.Base.base_relation import BaseRelation
-from sw_onto_generation.Ontologies.Base.configs import RelationModelConfig
+from sw_onto_generation.Ontologies.Base.configs import FieldConfig, NebulaIndexType, RelationModelConfig
 from sw_onto_generation.Ontologies.Common.common_nodes import (
-    Ek,
-    Ekler,
     GeneralDocumentInfo,
-    Kefil,
     SozlesmeBaslangicTarihi,
     SozlesmeBitisTarihi,
     SozlesmeKonu,
@@ -20,7 +19,8 @@ from sw_onto_generation.Ontologies.Common.common_nodes import (
 
 class Yururluk(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin yururlukte olup olmadigini belirler. SozlesmeYururluk node'u ile iliskilendirir.", edge_type="has_yururluk", edge_index=False
+        description="Sozlesmenin yururlukte olup olmadigini belirler. SozlesmeYururluk node'u ile iliskilendirir.",
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="yururluk"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
     )
 
     source_node: GeneralDocumentInfo
@@ -28,7 +28,10 @@ class Yururluk(BaseRelation):
 
 
 class SozlesmeKonusu(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(description="Sozlesmenin konusunu. SozlesmeKonu node'u ile iliskilendirir.", edge_type="has_sozlesmekonusu", edge_index=False)
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        description="Sozlesmenin konusunu. SozlesmeKonu node'u ile iliskilendirir.",
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="sozlesme_konusu"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+    )
 
     source_node: GeneralDocumentInfo
     target_node: SozlesmeKonu
@@ -37,8 +40,8 @@ class SozlesmeKonusu(BaseRelation):
 class BaslangicTarihi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmenin basladigi tarihi belirler",
-        edge_type="has_baslangictarihi",
-        edge_index=True,
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="baslangic_tarihi"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        field_configs=[FieldConfig(field_name="relation_type", search_type=NebulaIndexType.EXACT)],
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeBaslangicTarihi
@@ -47,8 +50,8 @@ class BaslangicTarihi(BaseRelation):
 class BitisTarihi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmenin bitigi, sonlandigi tarihi belirler",
-        edge_type="has_bitistarihi",
-        edge_index=True,
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="bitis_tarihi"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        field_configs=[FieldConfig(field_name="relation_type", search_type=NebulaIndexType.EXACT)],
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeBitisTarihi
@@ -57,8 +60,8 @@ class BitisTarihi(BaseRelation):
 class SozlesmeSuresi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmenin suresini belirler. Sozlesmenin baslangic ve bitis tarihleri arasindaki sureyi ifade eder.",
-        edge_type="has_sozlesmesuresi",
-        edge_index=False,
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="sozlesme_suresi"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        field_configs=[FieldConfig(field_name="relation_type", search_type=NebulaIndexType.EXACT)],
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeSure
@@ -67,8 +70,7 @@ class SozlesmeSuresi(BaseRelation):
 class SozlesmeTeminatlari(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmede teminat belirtilip belitilmedigini belirler. Teminatlar nodundaki teminat_var degeri true ise bu iliski kurulur Teminatlar nodu yoksa veya False ise kurulmaz.",
-        edge_type="has_sozlesmeteminatlari",
-        edge_index=False,
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="teminatlar"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
     )
     source_node: GeneralDocumentInfo
     target_node: Teminatlar
@@ -76,7 +78,8 @@ class SozlesmeTeminatlari(BaseRelation):
 
 class TeminatListesi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede teminat belirtilmise bunlari SozlesmeTeminatlari node'u ile iliskilendirir.", edge_type="has_teminat", edge_index=False
+        description="Sozlesmede teminat belirtilmise bunlari SozlesmeTeminatlari node'u ile iliskilendirir.",
+        extra_fields=[FieldInfo(alias="relation_name", annotation=str, default="teminat_listesi")],
     )
     source_node: Teminatlar
     target_node: Teminat
@@ -85,36 +88,7 @@ class TeminatListesi(BaseRelation):
 class SozlesmeUyusmazlikCozumYeri(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmede uyusmazlik durumunda cozum yerini belirler. UyusmazlikCozumYeri node'u ile iliskilendirir.",
-        edge_type="has_uyusmazlikcozumyeri",
-        edge_index=False,
+        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="uyusmazlik_yeri"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
     )
     source_node: GeneralDocumentInfo
     target_node: UyusmazlikCozumYeri
-
-
-class Kefalet(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin kefillerini belirler. Sozlesmede kefil varsa bu iliski kurulur.",
-        edge_type="has_kefalet",
-        edge_index=False,
-    )
-    source_node: GeneralDocumentInfo
-    target_node: Kefil
-
-
-class SozlesmeEkleri(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede ek olup olmadigini belirler. Ekler nodundaki ek_var degeri true ise bu iliski kurulur Ekler nodu yoksa veya False ise kurulmaz.",
-        edge_type="has_sozlesmeteminatlari",
-        edge_index=False,
-    )
-    source_node: GeneralDocumentInfo
-    target_node: Ekler
-
-
-class EkListesi(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede Ek belirtilmise bunlari SozlesmeEkleri node'u ile iliskilendirir.", edge_type="has_ek", edge_index=False
-    )
-    source_node: Ekler
-    target_node: Ek
