@@ -53,7 +53,7 @@ class BaseNode(BaseModel):
             extra_fields = getattr(child_config, "extra_fields", getattr(parent_config, "extra_fields", []))
             nodetag_index = getattr(child_config, "nodetag_index", getattr(parent_config, "node_tag_index", False))
             ask_llm = getattr(child_config, "ask_llm", getattr(parent_config, "ask_llm", False))
-            create_dynamically_from = getattr(child_config, "create_dynamically_from", getattr(parent_config, "create_dynamically_from", None))
+            nodeclass_to_be_created_automatically = getattr(child_config, "nodeclass_to_be_created_automatically", getattr(parent_config, "nodeclass_to_be_created_automatically", None))
             # Create merged config
             merged_config = NodeModelConfig(
                 node_tag=node_tag,
@@ -63,7 +63,7 @@ class BaseNode(BaseModel):
                 extra_fields=extra_fields,
                 nodetag_index=nodetag_index,
                 ask_llm=ask_llm,
-                nodeclass_to_be_created_automatically=create_dynamically_from,
+                nodeclass_to_be_created_automatically=nodeclass_to_be_created_automatically,
             )
             cls.node_config = merged_config
 
