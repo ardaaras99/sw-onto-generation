@@ -168,6 +168,18 @@ class SozlesmeSure(BaseNode):
     )
 
 
+class Teminatlar(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        node_tag="Teminatlar",
+        description="""
+        Sozlesmenin icerisinde herhangi bir teminat olup olmadigini belirler. En az bir teminat varsa true olur yoksa bu node yaratilmaz.
+        """,
+        cardinality=False,
+        ask_llm=False,
+    )
+    teminat_var: bool | None = Field(default=True, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
+
+
 class Teminat(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         node_tag="Teminat",
@@ -176,6 +188,7 @@ class Teminat(BaseNode):
         Depozito olarak da teminat istenmis olabilir. her birini ayri bir node olarak tanimlayin.
         """,
         cardinality=True,
+        nodeclass_to_be_created_automatically=Teminatlar,
     )
     teminat_miktari: str = Field(
         default="", description="Sozlesmede belirtilen herhangi bir teminatin miktari. Teminat miktari, para birimi ile birlikte belirtilmelidir. Ornegin '1000 TL', '500 USD', '2000 EUR' gibi."
@@ -184,17 +197,6 @@ class Teminat(BaseNode):
         default=None,
         description="Teminatin tipi belirtilmelidir. Ornegin 'Banka Teminat Mektubu', 'Banka Hesap Blokesi', 'Altin', 'Doviz', 'Para' gibi. Teminat tipi, teminatin ne sekilde saglandigini belirtir.",
     )
-
-
-class Teminatlar(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        node_tag="Teminatlar",
-        description="""
-        Sozlesmenin icerisinde herhangi bir teminat olup olmadigini belirler. En az bir teminat varsa true olur yoksa bu node yaratilmaz.
-        """,
-        cardinality=False,
-    )
-    teminat_var: bool | None = Field(default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
 
 
 class UyusmazlikCozumYeri(BaseNode):
@@ -228,17 +230,6 @@ class Kefil(BaseNode):
     kefil_turu: str | None = Field(default=None, description="Kefilin türü, örneğin 'Müteselsil Kefil', 'Sınırlı Kefil', 'Kefil' gibi.")
 
 
-class Ek(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        node_tag="Ek",
-        description="""
-        Sozlesmenin icerisnde belirtilen ekler. Ekler, sözleşmenin ayrıntılarını veya ek belgelerini içerebilir. Ekler, sözleşmenin bir parçası olarak kabul edilir. Genelde 'ekler', 'sozlesmenin ekleri', 'ek-1', 'ek-2' gibi ifadelerle başlar.
-        """,
-        cardinality=True,
-    )
-    ek_aciklama: str = Field(default="", description="sozlemede belirtilen ekin aciklamasi. ")
-
-
 class Ekler(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         node_tag="Ekler",
@@ -246,5 +237,18 @@ class Ekler(BaseNode):
         Sozlesmenin icerisinde herhangi bir Ek olup olmadigini belirler. En az bir Ek varsa true olur yoksa bu node yaratilmaz.
         """,
         cardinality=False,
+        ask_llm=False,
     )
-    ek_var: bool | None = Field(default=False, description="En az bir ek varsa True, yoksa zaten yaratilmaz.")
+    ek_var: bool | None = Field(default=True, description="En az bir ek varsa True, yoksa zaten yaratilmaz.")
+
+
+class Ek(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        node_tag="Ek",
+        description="""
+        Sozlesmenin icerisnde belirtilen ekler. Ekler, sözleşmenin ayrıntılarını veya ek belgelerini içerebilir. Ekler, sözleşmenin bir parçası olarak kabul edilir. Genelde 'ekler', 'sozlesmenin ekleri', 'ek-1', 'ek-2' gibi ifadelerle başlar.
+        """,
+        cardinality=True,
+        nodeclass_to_be_created_automatically=Ekler,
+    )
+    ek_aciklama: str = Field(default="", description="sozlemede belirtilen ekin aciklamasi. ")

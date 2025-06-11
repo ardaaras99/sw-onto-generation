@@ -11,6 +11,7 @@ class BaseNode(BaseModel):
         description="",
         cardinality=False,
         field_configs=[FieldConfig(field_name="reason", search_type=NebulaIndexType.VECTOR)],
+        ask_llm=True,
     )
 
     reason: str = Field(description="Bu nodeu çıkarırken nasıl bir mantık kullandın")
@@ -51,6 +52,8 @@ class BaseNode(BaseModel):
             cardinality = getattr(child_config, "cardinality", getattr(parent_config, "cardinality", False))
             extra_fields = getattr(child_config, "extra_fields", getattr(parent_config, "extra_fields", []))
             nodetag_index = getattr(child_config, "nodetag_index", getattr(parent_config, "node_tag_index", False))
+            ask_llm = getattr(child_config, "ask_llm", getattr(parent_config, "ask_llm", False))
+            create_dynamically_from = getattr(child_config, "create_dynamically_from", getattr(parent_config, "create_dynamically_from", None))
             # Create merged config
             merged_config = NodeModelConfig(
                 node_tag=node_tag,
@@ -59,6 +62,8 @@ class BaseNode(BaseModel):
                 field_configs=merged_fields,
                 extra_fields=extra_fields,
                 nodetag_index=nodetag_index,
+                ask_llm=ask_llm,
+                nodeclass_to_be_created_automatically=create_dynamically_from,
             )
             cls.node_config = merged_config
 

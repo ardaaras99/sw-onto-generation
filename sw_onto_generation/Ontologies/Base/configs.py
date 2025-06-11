@@ -30,6 +30,8 @@ class NodeModelConfig(BaseModel):
     nodetag_index: bool = Field(default=False, description="This tag is indexed in Nebula Graph")
     description: str = Field(description=" LLMe nodu tanıtmak için kullanılır")
     cardinality: bool = Field(description="LLMe node'un birden fazla olup olmadığını belirtir")
+    ask_llm: bool = Field(default=False, description="LLM e sorup sorulmayacağını belirtir")
+    nodeclass_to_be_created_automatically: type[BaseModel] | None = Field(default=None, description="Bu node'un oluşturulması için kullanılacak base node'un tipi")
     extra_fields: list[FieldInfo] = Field(default_factory=list, description="Node'a eklenecek ekstra field'lar")
     field_configs: list[FieldConfig] = Field(default_factory=list, description="Nebula graph'de node'un field'larının config'i, hangi field'ların index type'ı ne olacak")
 
