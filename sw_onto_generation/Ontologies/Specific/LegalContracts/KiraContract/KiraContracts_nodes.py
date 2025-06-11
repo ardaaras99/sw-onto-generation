@@ -15,7 +15,7 @@ class KiraKonusuMulk(BaseNode):
                 Kira konusu mülk, tip, buyukluk, adres ve diğer özellikleri içerebilir.
                 """,
         cardinality=True,
-        field_configs=[FieldConfig(field_name="documan_ismi", search_type=NebulaIndexType.VECTOR)],
+        field_configs=[FieldConfig(field_name="adres", search_type=NebulaIndexType.VECTOR)],
     )
 
     tur: str | None = Field(description="Kira konusu mulkun turunu belirtir Ev, arsa, ofis, tarla, isyeri, bina gibi")

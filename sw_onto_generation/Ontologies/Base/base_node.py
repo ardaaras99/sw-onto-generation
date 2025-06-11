@@ -26,8 +26,8 @@ class BaseNode(BaseModel):
         if cls is BaseNode:
             return
 
-        parent_config: NodeModelConfig = getattr(cls.__base__, "node_config", None)
-        child_config: NodeModelConfig = getattr(cls, "node_config", None)
+        parent_config: NodeModelConfig | None = getattr(cls.__base__, "node_config", None)
+        child_config: NodeModelConfig | None = getattr(cls, "node_config", None)
 
         if parent_config is not None and child_config is not None and parent_config is not child_config:
             # Merge node_tag: use child's

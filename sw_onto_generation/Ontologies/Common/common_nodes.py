@@ -10,10 +10,11 @@ from sw_onto_generation.Ontologies.Base.configs import FieldConfig, NebulaIndexT
 class GeneralDocumentInfo(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         node_tag="GeneralDocumentInfo",
+        nodetag_index=True,
         description="Döküman hakkinda genel bilgileri tanımlar, sozlesme ismi veya basligi en onemli bilgidir. Her sozlesmede mutlak bir sekilde bulunmalidir.",
         cardinality=False,
         field_configs=[FieldConfig(field_name="documan_ismi", search_type=NebulaIndexType.VECTOR)],
-        extra_fields=[FieldInfo(alias="documan_ismi", annotation=str, default="")],
+        extra_fields=[FieldInfo(alias="documan_type", annotation=str, default="")],
     )
 
     documan_ismi: str = Field(description="Belgenin başlığı")

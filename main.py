@@ -64,7 +64,7 @@ def test_imports() -> list[tuple[str, bool, str]]:
     return results
 
 
-def main():
+def main() -> int:
     """Run the import tests and print the results."""
     print("Testing if all Python files can be imported...")
 
