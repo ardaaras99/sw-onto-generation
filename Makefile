@@ -25,4 +25,6 @@ type:
 	$(EXECUTER) mypy .
 
 
-
+local-import-test:
+	$(EXECUTER) main.py
+	

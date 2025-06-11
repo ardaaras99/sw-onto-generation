@@ -26,8 +26,8 @@ class BaseNode(BaseModel):
         if cls is BaseNode:
             return
 
-        parent_config = getattr(cls.__base__, "node_config", None)
-        child_config = getattr(cls, "node_config", None)
+        parent_config: NodeModelConfig = getattr(cls.__base__, "node_config", None)
+        child_config: NodeModelConfig = getattr(cls, "node_config", None)
 
         if parent_config is not None and child_config is not None and parent_config is not child_config:
             # Merge node_tag: use child's
@@ -49,12 +49,14 @@ class BaseNode(BaseModel):
                     raise ValueError(f"Field '{fc.field_name}' in node_config is not a field of model {cls.__name__}")
             # Merge other configs (cardinality, etc.) - use child's if present, else parent's
             cardinality = getattr(child_config, "cardinality", getattr(parent_config, "cardinality", False))
+            extra_fields = getattr(child_config, "extra_fields", getattr(parent_config, "extra_fields", []))
             # Create merged config
             merged_config = NodeModelConfig(
                 node_tag=node_tag,
                 description=description,
                 cardinality=cardinality,
                 field_configs=merged_fields,
+                extra_fields=extra_fields,
             )
             cls.node_config = merged_config
 

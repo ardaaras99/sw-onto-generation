@@ -1,6 +1,7 @@
 from typing import ClassVar
 
 from pydantic import Field
+from pydantic.fields import FieldInfo
 
 from sw_onto_generation.Ontologies.Base.base_node import BaseNode
 from sw_onto_generation.Ontologies.Base.configs import FieldConfig, NebulaIndexType, NodeModelConfig
@@ -12,6 +13,7 @@ class GeneralDocumentInfo(BaseNode):
         description="Döküman hakkinda genel bilgileri tanımlar, sozlesme ismi veya basligi en onemli bilgidir. Her sozlesmede mutlak bir sekilde bulunmalidir.",
         cardinality=False,
         field_configs=[FieldConfig(field_name="documan_ismi", search_type=NebulaIndexType.VECTOR)],
+        extra_fields=[FieldInfo(alias="documan_ismi", annotation=str, default="")],
     )
 
     documan_ismi: str = Field(description="Belgenin başlığı")

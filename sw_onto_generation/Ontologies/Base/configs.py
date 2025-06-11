@@ -25,10 +25,12 @@ class FieldConfig(BaseModel):
 
 
 class NodeModelConfig(BaseModel):
+    model_config = {"arbitrary_types_allowed": True}
     node_tag: str = Field(description="Nebula graph'de node'un tag'i")
     description: str = Field(description=" LLMe nodu tanıtmak için kullanılır")
     cardinality: bool = Field(description="LLMe node'un birden fazla olup olmadığını belirtir")
-    field_configs: list[FieldConfig] | None = Field(default=None, description="Nebula graph'de node'un field'larının config'i, hangi field'ların index type'ı ne olacak")
+    extra_fields: list[FieldInfo] = Field(default_factory=list, description="Node'a eklenecek ekstra field'lar")
+    field_configs: list[FieldConfig] = Field(default_factory=list, description="Nebula graph'de node'un field'larının config'i, hangi field'ların index type'ı ne olacak")
 
 
 class RelationModelConfig(BaseModel):
