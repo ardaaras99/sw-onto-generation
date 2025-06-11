@@ -20,7 +20,10 @@ from sw_onto_generation.Ontologies.Common.common_nodes import (
 
 class Yururluk(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin yururlukte olup olmadigini belirler. SozlesmeYururluk node'u ile iliskilendirir.", edge_type="has_yururluk", edge_index=False
+        description="Sozlesmenin yururlukte olup olmadigini belirler. SozlesmeYururluk node'u ile iliskilendirir.",
+        edge_type="has_yururluk",
+        edge_index=False,
+        ask_llm=False,
     )
 
     source_node: GeneralDocumentInfo
@@ -28,7 +31,12 @@ class Yururluk(BaseRelation):
 
 
 class SozlesmeKonusu(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(description="Sozlesmenin konusunu. SozlesmeKonu node'u ile iliskilendirir.", edge_type="has_sozlesmekonusu", edge_index=False)
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        description="Sozlesmenin konusunu. SozlesmeKonu node'u ile iliskilendirir.",
+        edge_type="has_sozlesmekonusu",
+        edge_index=False,
+        ask_llm=False,
+    )
 
     source_node: GeneralDocumentInfo
     target_node: SozlesmeKonu
@@ -39,6 +47,7 @@ class BaslangicTarihi(BaseRelation):
         description="Sozlesmenin basladigi tarihi belirler",
         edge_type="has_baslangictarihi",
         edge_index=True,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeBaslangicTarihi
@@ -49,6 +58,7 @@ class BitisTarihi(BaseRelation):
         description="Sozlesmenin bitigi, sonlandigi tarihi belirler",
         edge_type="has_bitistarihi",
         edge_index=True,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeBitisTarihi
@@ -69,6 +79,7 @@ class SozlesmeTeminatlari(BaseRelation):
         description="Sozlesmede teminat belirtilip belitilmedigini belirler. Teminatlar nodundaki teminat_var degeri true ise bu iliski kurulur Teminatlar nodu yoksa veya False ise kurulmaz.",
         edge_type="has_sozlesmeteminatlari",
         edge_index=False,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: Teminatlar
@@ -76,7 +87,10 @@ class SozlesmeTeminatlari(BaseRelation):
 
 class TeminatListesi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede teminat belirtilmise bunlari SozlesmeTeminatlari node'u ile iliskilendirir.", edge_type="has_teminat", edge_index=False
+        description="Sozlesmede teminat belirtilmise bunlari SozlesmeTeminatlari node'u ile iliskilendirir.",
+        edge_type="has_teminat",
+        edge_index=False,
+        ask_llm=False,
     )
     source_node: Teminatlar
     target_node: Teminat
@@ -87,6 +101,7 @@ class SozlesmeUyusmazlikCozumYeri(BaseRelation):
         description="Sozlesmede uyusmazlik durumunda cozum yerini belirler. UyusmazlikCozumYeri node'u ile iliskilendirir.",
         edge_type="has_uyusmazlikcozumyeri",
         edge_index=False,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: UyusmazlikCozumYeri
@@ -97,6 +112,7 @@ class Kefalet(BaseRelation):
         description="Sozlesmenin kefillerini belirler. Sozlesmede kefil varsa bu iliski kurulur.",
         edge_type="has_kefalet",
         edge_index=False,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: Kefil
@@ -107,6 +123,7 @@ class SozlesmeEkleri(BaseRelation):
         description="Sozlesmede ek olup olmadigini belirler. Ekler nodundaki ek_var degeri true ise bu iliski kurulur Ekler nodu yoksa veya False ise kurulmaz.",
         edge_type="has_sozlesmeteminatlari",
         edge_index=False,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: Ekler
@@ -114,7 +131,10 @@ class SozlesmeEkleri(BaseRelation):
 
 class EkListesi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede Ek belirtilmise bunlari SozlesmeEkleri node'u ile iliskilendirir.", edge_type="has_ek", edge_index=False
+        description="Sozlesmede Ek belirtilmise bunlari SozlesmeEkleri node'u ile iliskilendirir.",
+        edge_type="has_ek",
+        edge_index=False,
+        ask_llm=False,
     )
     source_node: Ekler
     target_node: Ek

@@ -12,6 +12,7 @@ class KiralananMulk(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesme ile kiralanan mulku belirler. KiraKonusuMulk node'u ile iliskilendirir.",
         extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kiralanan_mulk"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: KiraKonusuMulk
@@ -44,6 +45,7 @@ class Depozito(BaseRelation):
         Sozlesmede bu bilgi varsa bu iliski kurulur. KiraDepozito node'u ile iliskilendirir.
         """,
         extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="depozito"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: KiraDepozito
@@ -53,6 +55,7 @@ class KiraDemirbaslari(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmede demirbas olup olmadigini belirler. Demirbaslar nodundaki demirbas_var degeri true ise bu iliski kurulur Demirbaslar nodu yoksa veya False ise kurulmaz.",
         extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="demirbaslar"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: Demirbaslar
@@ -62,6 +65,7 @@ class DemirbasListesi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Sozlesmede belirtilen demirbaslari KiraDemirbaslari node'u ile iliskilendirir.",
         extra_fields=[FieldInfo(alias="relation_name", annotation=str, default="demirbas_listesi")],
+        ask_llm=False,
     )
     source_node: Demirbaslar
     target_node: Demirbas
@@ -71,6 +75,7 @@ class KiralamaBedeli(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Kira sozlesmesinde belirtilen kira bedelidir. Kiracinin ne kadar odeyecegini belirler. KiraBedeli node'u ile iliskilendirir",
         extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kira_bedeli"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: KiraBedeli
@@ -80,6 +85,7 @@ class KiralamAmaci(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         description="Kiralanan seyin ne amacla kulkanilacagini belirtir. Sozlesmede bu bilgi varsa bu iliski kurulur. KiraAmaci node'u ile iliskilendirir",
         extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kira_amaci"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: KiraAmaci
@@ -92,6 +98,7 @@ class SimdikiDurumu(BaseRelation):
         Sozlesmede bu bilgi varsa bu iliski kurulur. SimdikiDurum node'u ile iliskilendirir.
         """,
         extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="simdiki_durum"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: SimdikiDurum

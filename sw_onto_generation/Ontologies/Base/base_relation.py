@@ -20,8 +20,8 @@ class BaseRelation(BaseModel):
         if cls is BaseRelation:
             return
 
-        parent_config = getattr(cls.__base__, "relation_config", None)
-        child_config = getattr(cls, "relation_config", None)
+        parent_config: RelationModelConfig | None = getattr(cls.__base__, "relation_config", None)
+        child_config: RelationModelConfig | None = getattr(cls, "relation_config", None)
 
         if parent_config is not None and child_config is not None and parent_config is not child_config:
             # Merge descriptions
@@ -62,12 +62,14 @@ class BaseRelation(BaseModel):
 
             # Merge extra_fields - use child's
             extra_fields = child_config.extra_fields or parent_config.extra_fields
+            ask_llm = getattr(child_config, "ask_llm", getattr(parent_config, "ask_llm", True))
 
             # Create merged config
             merged_config = RelationModelConfig(
                 description=description,
                 field_configs=merged_fields if merged_fields else None,
                 extra_fields=extra_fields,
+                ask_llm=ask_llm,
             )
             cls.relation_config = merged_config
 
