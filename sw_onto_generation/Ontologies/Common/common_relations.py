@@ -69,6 +69,7 @@ class SozlesmeSuresi(BaseRelation):
         description="Sozlesmenin suresini belirler. Sozlesmenin baslangic ve bitis tarihleri arasindaki sureyi ifade eder.",
         edge_type="has_sozlesmesuresi",
         edge_index=False,
+        ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeSure
