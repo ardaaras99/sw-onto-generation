@@ -13,13 +13,6 @@ classifiers = [
 readme = "README.md"
 
 dependencies = [
-    "langchain>=0.3.25",
-    "langchain-cli>=0.0.36",
-    "langchain-community>=0.3.24",
-    "langchain-core>=0.3.63",
-    "langchain-openai>=0.3.18",
-    "nebula3-python>=3.8.3",
-    "openpyxl>=3.1.5",
     "pandas>=2.2.3",
     "pydantic[email]>=2.11.5",
     "python-dotenv>=1.1.0",
@@ -87,6 +80,4 @@ major_version_zero = true
 update_changelog_on_bump = true
 
 [tool.uv.workspace]
-members = [
-    "nebula_graph_tutorial",
-]
+members = ["nebula_graph_tutorial"]
