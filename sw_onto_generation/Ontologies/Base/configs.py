@@ -9,6 +9,15 @@ class NebulaIndexType(StrEnum):
     VECTOR = "vector"
 
 
+class DocumentType(StrEnum):
+    KiraContracts = "Kira Sozleşmesi"
+    GenelSozlesme = "Genel Sözleşme"
+
+
+class CustomerType(StrEnum):
+    KUrumsal = "Kurumsal Müşteri"
+
+
 # Burada yer alan tüm descriptionlar Ontology yazanların neyin ne işe yaradığını anlaması için kullanılır.
 class FieldConfig(BaseModel):
     field_name: str = Field(description="Nebula graph'de field'un adı")
