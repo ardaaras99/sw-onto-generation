@@ -5,6 +5,10 @@ import os
 import sys
 from pathlib import Path
 
+from sw_onto_generation.Ontologies.Common.common_nodes import GeneralDocumentInfo
+
+print(GeneralDocumentInfo.node_config.nodetag_index)
+
 
 def find_python_files(directory: str = ".") -> list[Path]:
     """Find all .py files in the given directory and its subdirectories."""

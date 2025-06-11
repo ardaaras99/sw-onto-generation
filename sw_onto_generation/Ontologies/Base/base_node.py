@@ -50,6 +50,7 @@ class BaseNode(BaseModel):
             # Merge other configs (cardinality, etc.) - use child's if present, else parent's
             cardinality = getattr(child_config, "cardinality", getattr(parent_config, "cardinality", False))
             extra_fields = getattr(child_config, "extra_fields", getattr(parent_config, "extra_fields", []))
+            nodetag_index = getattr(child_config, "nodetag_index", getattr(parent_config, "node_tag_index", False))
             # Create merged config
             merged_config = NodeModelConfig(
                 node_tag=node_tag,
@@ -57,6 +58,7 @@ class BaseNode(BaseModel):
                 cardinality=cardinality,
                 field_configs=merged_fields,
                 extra_fields=extra_fields,
+                nodetag_index=nodetag_index,
             )
             cls.node_config = merged_config
 
