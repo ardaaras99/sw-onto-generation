@@ -21,7 +21,8 @@ class CustomerType(StrEnum):
 # Burada yer alan tüm descriptionlar Ontology yazanların neyin ne işe yaradığını anlaması için kullanılır.
 class FieldConfig(BaseModel):
     field_name: str = Field(description="Nebula graph'de field'un adı")
-    search_type: NebulaIndexType = Field(description="Nebula graph'de field'un index type'ı")
+    search_type: NebulaIndexType | None = Field(default=None, description="Nebula graph'de field'un index type'ı")
+    default_relation_type: str | None = Field(default=None, description="Eğer bu field bir relation ise, bu field'un default relation type'ı nedir. Eğer relation değilse None olmalı")
 
 
 class NodeModelConfig(BaseModel):
@@ -38,7 +39,6 @@ class NodeModelConfig(BaseModel):
 
 class RelationModelConfig(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
-    edge_type: str | None = Field(default=None, description="Type of the edge in Nebula Graph")
     edge_index: bool = Field(default=False, description="Index of the edge in Nebula Graph")
     description: str | None = Field(default=None, description="LLMe Relation'u tanıtmak için kullanılır")
     ask_llm: bool = Field(default=True, description="Eğer relation iki node un var olması durumunda otomatik bir şekilde oluşuyorsa False, yoksa True")

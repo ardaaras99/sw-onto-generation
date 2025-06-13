@@ -25,6 +25,7 @@ class Adres(BaseNode):
         node_tag="Adres",
         description="Adres bilgilerini tanımlar. Adres, cadde, sokak, mahalle, apartman, ilçe, il ve posta kodu gibi bilgileri içerebilir.",
         cardinality=True,
+        ask_llm=False,
         field_configs=[
             FieldConfig(field_name="il", search_type=NebulaIndexType.EXACT),
             FieldConfig(field_name="ilçe", search_type=NebulaIndexType.EXACT),
@@ -53,6 +54,7 @@ class Insan(BaseNode):
             FieldConfig(field_name="tckn", search_type=NebulaIndexType.EXACT),
             FieldConfig(field_name="soyad", search_type=NebulaIndexType.EXACT),
             FieldConfig(field_name="ad", search_type=NebulaIndexType.EXACT),
+            FieldConfig(field_name="adres", default_relation_type="has_adres"),
         ],
     )
 
@@ -156,8 +158,8 @@ class SozlesmeSure(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         node_tag="SozlesmeSure",
         description="""
-        Sozlesmenin suresini belirler. Sozlesmenin suresi, sozlesme gecerlidir. SozlesmeBaslangicTarihi ile SozlesmeBitisTarihi arasindaki suredir. 
-        Eger bu iki tarih belirtimisse kesinlikle bu iki tarih arasindaki suredir. Imzalandigi tarihten itibaren su kadar sure gecerlidir diye de belirtilebilir. 
+        Sozlesmenin suresini belirler. Sozlesmenin suresi, sozlesme gecerlidir. SozlesmeBaslangicTarihi ile SozlesmeBitisTarihi arasindaki suredir.
+        Eger bu iki tarih belirtimisse kesinlikle bu iki tarih arasindaki suredir. Imzalandigi tarihten itibaren su kadar sure gecerlidir diye de belirtilebilir.
         Belirtilmemis de olabilir. Yil, ay veya gun seklinde belirtilmis olabilir.En buyuk zaman birimine gore belirtiniz lutfen. Ornek 1 yil 3 ay veya 3 ay 15 gun gibi.
         """,
         cardinality=False,
@@ -247,6 +249,7 @@ class Ek(BaseNode):
         node_tag="Ek",
         description="""
         Sozlesmenin icerisnde belirtilen ekler. Ekler, sözleşmenin ayrıntılarını veya ek belgelerini içerebilir. Ekler, sözleşmenin bir parçası olarak kabul edilir. Genelde 'ekler', 'sozlesmenin ekleri', 'ek-1', 'ek-2' gibi ifadelerle başlar.
+        Ek ifadesinin mutlaka belirtilmis olmasi gerekir
         """,
         cardinality=True,
         nodeclass_to_be_created_automatically=Ekler,
