@@ -1,7 +1,7 @@
 PROJECT_NAME:=sw_onto_generation
 EXECUTER:=uv run
 
-all: format lint type test
+all: format lint test
 
 init:
 	git init

@@ -1,12 +1,13 @@
 from typing import ClassVar
 
-from sw_onto_generation.Ontologies.Base.base_relation import BaseRelation
-from sw_onto_generation.Ontologies.Base.configs import RelationModelConfig
-from sw_onto_generation.Ontologies.Common.common_nodes import (
+from sw_onto_generation.base.base_relation import BaseRelation
+from sw_onto_generation.base.configs import RelationModelConfig
+from sw_onto_generation.common.common_nodes import (
     Ek,
     Ekler,
     GeneralDocumentInfo,
-    Kefil,
+    Insan,
+    Sirket,
     SozlesmeBaslangicTarihi,
     SozlesmeBitisTarihi,
     SozlesmeKonu,
@@ -20,8 +21,8 @@ from sw_onto_generation.Ontologies.Common.common_nodes import (
 
 class HasYururluk(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin yururlukte olup olmadigini belirler. SozlesmeYururluk node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmenin yururlukte olup olmadigini belirler. SozlesmeYururluk node'u ile iliskilendirir.",
         ask_llm=False,
     )
 
@@ -31,8 +32,8 @@ class HasYururluk(BaseRelation):
 
 class HasSozlesmeKonusu(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin konusunu. SozlesmeKonu node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmenin konusunu. SozlesmeKonu node'u ile iliskilendirir.",
         ask_llm=False,
     )
 
@@ -42,8 +43,8 @@ class HasSozlesmeKonusu(BaseRelation):
 
 class HasBaslangicTarihi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin basladigi tarihi belirler",
         edge_index=True,
+        description="Sozlesmenin basladigi tarihi belirler",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -52,8 +53,8 @@ class HasBaslangicTarihi(BaseRelation):
 
 class HasBitisTarihi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin bitigi, sonlandigi tarihi belirler",
         edge_index=True,
+        description="Sozlesmenin bitigi, sonlandigi tarihi belirler",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -62,8 +63,8 @@ class HasBitisTarihi(BaseRelation):
 
 class HasSozlesmeSuresi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin suresini belirler. Sozlesmenin baslangic ve bitis tarihleri arasindaki sureyi ifade eder.",
         edge_index=False,
+        description="Sozlesmenin suresini belirler. Sozlesmenin baslangic ve bitis tarihleri arasindaki sureyi ifade eder.",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -72,8 +73,8 @@ class HasSozlesmeSuresi(BaseRelation):
 
 class HasTeminatlar(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede teminat belirtilip belitilmedigini belirler. Bir tane teminat olursa bu iliski kurulur. Teminatlar node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmede teminat belirtilip belitilmedigini belirler. Bir tane teminat olursa bu iliski kurulur. Teminatlar node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -82,8 +83,8 @@ class HasTeminatlar(BaseRelation):
 
 class HasTeminat(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede teminat belirtilmise bunlari HasTeminatlar node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmede teminat belirtilmise bunlari HasTeminatlar node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: Teminatlar
@@ -92,28 +93,28 @@ class HasTeminat(BaseRelation):
 
 class HasSozlesmeUyusmazlikCozumYeri(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede uyusmazlik durumunda cozum yerini belirler. UyusmazlikCozumYeri node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmede uyusmazlik durumunda cozum yerini belirler. UyusmazlikCozumYeri node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
     target_node: UyusmazlikCozumYeri
 
 
-class HasKefalet(BaseRelation):
+class HasKefil(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmenin kefillerini belirler. Sozlesmede kefil varsa bu iliski kurulur.",
         edge_index=False,
-        ask_llm=False,
+        description="Sozlesmenin kefillerini belirler. Sozlesmede kefil varsa bu iliski kurulur.",
+        ask_llm=True,
     )
     source_node: GeneralDocumentInfo
-    target_node: Kefil
+    target_node: Insan | Sirket
 
 
 class HasSozlesmeEkler(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede ek olup olmadigini belirler. Mutlaka Ek olarak belirtilmesi gerekir. Ekler node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmede ek olup olmadigini belirler. Mutlaka Ek olarak belirtilmesi gerekir. Ekler node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -122,8 +123,8 @@ class HasSozlesmeEkler(BaseRelation):
 
 class HasEk(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="Sozlesmede Ek belirtilmise bunlari Ekler node'u ile iliskilendirir.",
         edge_index=False,
+        description="Sozlesmede Ek belirtilmise bunlari Ekler node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: Ekler

@@ -1,18 +1,23 @@
 from typing import ClassVar
 
-from pydantic.fields import FieldInfo
-
-from sw_onto_generation.Ontologies.Base.base_relation import BaseRelation
-from sw_onto_generation.Ontologies.Base.configs import FieldConfig, NebulaIndexType, RelationModelConfig
-from sw_onto_generation.Ontologies.Common.common_nodes import GeneralDocumentInfo, Insan, Sirket
-from sw_onto_generation.Ontologies.Specific.LegalContracts.KiraContract.KiraContracts_nodes import Demirbas, Demirbaslar, KiraAmaci, KiraBedeli, KiraDepozito, KiraKonusuMulk, SimdikiDurum
+from sw_onto_generation.base.base_relation import BaseRelation
+from sw_onto_generation.base.configs import RelationModelConfig
+from sw_onto_generation.common.common_nodes import GeneralDocumentInfo, Insan, Sirket
+from sw_onto_generation.root.lib_LegalContract.onto_kira.nodes import (
+    Demirbas,
+    Demirbaslar,
+    Depozito,
+    KiraAmaci,
+    KiraBedeli,
+    KiraKonusuMulk,
+    SimdikiDurum,
+)
 
 
 class HasKiralananMulk(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         edge_index=False,
         description="Sozlesme ile kiralanan mulku belirler. KiraKonusuMulk node'u ile iliskilendirir.",
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kiralanan_mulk"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -21,9 +26,9 @@ class HasKiralananMulk(BaseRelation):
 
 class HasKiraci(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
         description="Sozlesmede yer alan kiracıyı belirler. Birden fazla kiracı olabilir. Kiraci Insan veya şirket olabilir, kiraci seklinde tanimlanabilir.",
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kiracı"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
-        field_configs=[FieldConfig(field_name="relation_type", search_type=NebulaIndexType.EXACT)],
+        ask_llm=True,
     )
     source_node: GeneralDocumentInfo
     target_node: Insan | Sirket
@@ -31,9 +36,9 @@ class HasKiraci(BaseRelation):
 
 class HasKirayaVeren(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
         description="Sozlesmede yer alan mulku kiraya vereni belirler. Birden fazla kiraya veren olabilir. Mal sahibi, kiraya veren olarak tanimlanabilir.kiraya veren Insan veya Sirket olabilir.",
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kiraya_veren"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
-        field_configs=[FieldConfig(field_name="relation_type", search_type=NebulaIndexType.EXACT)],
+        ask_llm=True,
     )
     source_node: GeneralDocumentInfo
     target_node: Insan | Sirket
@@ -41,21 +46,18 @@ class HasKirayaVeren(BaseRelation):
 
 class HasDepozito(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="""
-        Kira sozlesmesinde belirtilen depozitoyu gosterir. .
-        Sozlesmede bu bilgi varsa bu iliski kurulur. KiraDepozito node'u ile iliskilendirir.
-        """,
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="depozito"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        edge_index=False,
+        description="Kira sozlesmesinde belirtilen depozitoyu gosterir. Sozlesmede bu bilgi varsa bu iliski kurulur. KiraDepozito node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
-    target_node: KiraDepozito
+    target_node: Depozito
 
 
 class HasKiraDemirbaslar(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
         description="Sozlesmede demirbas olup olmadigini belirler. Demirbaslar nodundaki demirbas_var degeri true ise bu iliski kurulur Demirbaslar nodu yoksa veya False ise kurulmaz.",
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="demirbaslar"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -64,8 +66,8 @@ class HasKiraDemirbaslar(BaseRelation):
 
 class HasDemirbas(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
         description="Sozlesmede belirtilen demirbaslari KiraDemirbaslari node'u ile iliskilendirir.",
-        extra_fields=[FieldInfo(alias="relation_name", annotation=str, default="demirbas_listesi")],
         ask_llm=False,
     )
     source_node: Demirbaslar
@@ -74,8 +76,8 @@ class HasDemirbas(BaseRelation):
 
 class HasKiralamaBedeli(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
         description="Kira sozlesmesinde belirtilen kira bedelidir. Kiracinin ne kadar odeyecegini belirler. KiraBedeli node'u ile iliskilendirir",
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kira_bedeli"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -84,8 +86,8 @@ class HasKiralamaBedeli(BaseRelation):
 
 class HasKiralamAmaci(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
         description="Kiralanan seyin ne amacla kulkanilacagini belirtir. Sozlesmede bu bilgi varsa bu iliski kurulur. KiraAmaci node'u ile iliskilendirir",
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="kira_amaci"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
@@ -94,11 +96,8 @@ class HasKiralamAmaci(BaseRelation):
 
 class HasSimdikiDurumu(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        description="""
-        Kiralanan seyin mevcut durumunu gosterir. Tamirat gerektiriyor mu, kiralanan seyin durumu nedir gibi bilgileri icerir.
-        Sozlesmede bu bilgi varsa bu iliski kurulur. SimdikiDurum node'u ile iliskilendirir.
-        """,
-        extra_fields=[FieldInfo(alias="relation_type", annotation=str, default="simdiki_durum"), FieldInfo(alias="relation_name", annotation=str, default="has_relation")],
+        edge_index=False,
+        description="Kiralanan seyin mevcut durumunu gosterir. Tamirat gerektiriyor mu, kiralanan seyin durumu nedir gibi bilgileri icerir. Sozlesmede bu bilgi varsa bu iliski kurulur. SimdikiDurum node'u ile iliskilendirir.",
         ask_llm=False,
     )
     source_node: GeneralDocumentInfo
