@@ -7,9 +7,12 @@ from sw_onto_generation.root.lib_LegalContract.onto_kira.nodes import (
     Demirbas,
     Demirbaslar,
     Depozito,
+    GiderSorumluluklari,
     KiraAmaci,
+    KiraArtisOrani,
     KiraBedeli,
     KiraKonusuMulk,
+    Sigorta,
     SimdikiDurum,
 )
 
@@ -102,3 +105,33 @@ class HasSimdikiDurumu(BaseRelation):
     )
     source_node: GeneralDocumentInfo
     target_node: SimdikiDurum
+
+
+class HasKiraArtisOrani(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kira sozlesmesinde belirlenen kira artış oranı veya yöntemi bilgisini bağlar. KiraArtisOrani node'u ile ilişkilendirir.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: KiraArtisOrani
+
+
+class HasGiderSorumluluklari(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kira sozlesmesinde yan giderlerin (elektrik, su, aidat vb.) hangi tarafça karşılanacağını gösterir. GiderSorumluluklari node'u ile ilişkilendirir.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: GiderSorumluluklari
+
+
+class HasSigorta(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kiralanan mülkle ilgili sigorta yükümlülüklerini belirtir. Sigorta node'u ile ilişkilendirir.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: Sigorta

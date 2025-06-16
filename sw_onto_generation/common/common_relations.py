@@ -5,6 +5,10 @@ from sw_onto_generation.base.configs import RelationModelConfig
 from sw_onto_generation.common.common_nodes import (
     Ek,
     Ekler,
+    FaizMaddeleri,
+    FaizMaddesi,
+    FesihMaddeleri,
+    FesihMaddesi,
     GeneralDocumentInfo,
     Insan,
     Sirket,
@@ -129,3 +133,47 @@ class HasEk(BaseRelation):
     )
     source_node: Ekler
     target_node: Ek
+
+
+class HasFesihMaddeleri(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşmede fesih maddelerinin bulunup bulunmadığını belirtir. FesihMaddeleri düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: FesihMaddeleri
+
+
+class HasFesihMaddesi(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşmedeki her bir fesih maddesini FesihMaddeleri düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: FesihMaddeleri
+    target_node: FesihMaddesi
+
+
+class HasFaizMaddeleri(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşmede faiz maddelerinin bulunup bulunmadığını belirtir. FaizMaddeleri düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: FaizMaddeleri
+
+
+class HasFaizMaddesi(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşmedeki her bir faiz maddesini FaizMaddeleri düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: FaizMaddeleri
+    target_node: FaizMaddesi

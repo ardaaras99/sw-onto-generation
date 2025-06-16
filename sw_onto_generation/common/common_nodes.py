@@ -9,18 +9,26 @@ from sw_onto_generation.base.configs import NebulaIndexType, NodeFieldConfig, No
 class GeneralDocumentInfo(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
-        description="Döküman hakkinda genel bilgileri tanımlar, sozlesme ismi veya basligi en onemli bilgidir. Her sozlesmede mutlak bir sekilde bulunmalidir.",
+        description="Doküman hakkında genel bilgileri tanımlar, sözleşme ismi veya başlığı en önemli bilgidir. Her sözleşmede mutlaka bulunur.",
         cardinality=False,
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
-
-    documan_ismi: str = Field(
-        default="",
-        description="Belgenin basligi",
+    doküman_tipi: str = Field(
+        default="Sözleşme",
+        description="Belgenin tipi, örneğin 'Sözleşme', 'Sözleşme', 'Sözleşme' gibi.",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    doküman_ismi: str = Field(
+        default="Sözleşme",
+        description="Belgenin başlığı",
         config=NodeFieldConfig(index_type=NebulaIndexType.VECTOR),
     )
-    documan_type: str = Field(...)
+    sozlesme_no: str | None = Field(
+        default=None,
+        description="Sözleşme numarası / referans numarası",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
 
 
 class Adres(BaseNode):
@@ -28,141 +36,170 @@ class Adres(BaseNode):
         nodetag_index=True,
         description="Adres bilgilerini tanımlar. Adres, cadde, sokak, mahalle, apartman, ilçe, il ve posta kodu gibi bilgileri içerebilir.",
         cardinality=True,
-        ask_llm=False,
+        ask_llm=False,  # Used in Insan and Sirket nodes, LLM fills there. Keep false.
         nodeclass_to_be_created_automatically=None,
     )
 
-    il: str = Field(
-        default="",
-        description="Adresin bulunduğu il",
+    il: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu ilin adı, Örneğin 'İstanbul', 'Ankara', 'İzmir'",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    ilçe: str = Field(
-        default="",
-        description="Adresin bulunduğu ilçe",
+    ilçe: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu ilçenin adı, Örneğin 'Beşiktaş', 'Kadıköy', 'Ümraniye'",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    cadde: str = Field(
-        default="",
-        description="Adresin cadde veya sokak adı",
+    cadde: str | None = Field(default=None, description="Adresin bulunduğu cadde veya sokak adı")
+    mahalle: str | None = Field(default=None, description="Adresin bulunduğu mahalle adı")
+    apartman: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu apartman adı veya numarası veya kapi numarası veya her ikisi de olabilir",
     )
-    mahalle: str = Field(
-        default="",
-        description="Adresin bulunduğu mahalle",
+    kat: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu kat numarası, apartman içinde bulunan kat bilgisi",
     )
-    apartman: str = Field(
-        default="",
-        description="Adresin bulunduğu apartman adi veya numarasi veya kapi numarası veya her ikisi de olabilir",
+    kapı_no: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu kapı numarası, apartman içinde bulunan kapı bilgisi",
     )
-    kat: str = Field(
-        default="",
-        description="Adresin bulunduğu kat numarası, apartman içinde kat bilgisi",
+    posta_kodu: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu posta kodu",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    kapi_no: str = Field(
-        default="",
-        description="Adresin bulunduğu kapı numarası, apartman içinde kapı bilgisi",
+    ülke: str | None = Field(
+        default=None,
+        description="Adresin bulunduğu ülke, Türkiye için 'Türkiye' gibi değerler olabilir",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    ulke: str = Field(
-        default="",
-        description="Adresin bulunduğu ülke, Türkiye için 'Türkiye' veya 'T.C.' gibi değerler olabilir",
+    ada: str | None = Field(
+        default=None, description="Adreste belirtilmişse kadastro ada bilgisini içerir"
     )
-    posta_kodu: str = Field(
-        default="",
-        description="Adresin posta kodu",
+    parsel: str | None = Field(
+        default=None, description="Adreste belirtilmişse kadastro parsel bilgisini içerir"
     )
-    ada: str = Field(
-        default="",
-        description="adreste belirtilmisse kadastro ada bilgisini icerir",
-    )
-    parsel: str = Field(
-        default="",
-        description="adreste belirtilmisse kadastro parsel bilgisini icerir",
-    )
+    acik_adres: str | None = Field(default=None, description="Adresin tek satırda tam hâli")
 
 
 class Insan(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
-        description="Döküman icinde bulunan gercek kisileri yani insanlari tanimlar. Bu insanlar, sözleşmeyi imzalayan veya sözleşmede adı geçen gerçek kişilerdir.",
+        description="Doküman içinde bulunan gerçek kişileri yani insanları tanımlar. Bu insanlar, sözleşmeyi imzalayan veya sözleşmede adı geçen gerçek kişilerdir.",
         cardinality=True,
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
 
-    ad: str = Field(
-        default="",
+    ad: str | None = Field(
+        default=None,
         description="İnsanın adı",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    soyad: str = Field(
-        default="",
+    soyad: str | None = Field(
+        default=None,
         description="İnsanın soyadı",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    tckn: str = Field(
-        default="",
-        description="İnsanın T.C. kimlik numarası, Türkiye Cumhuriyeti vatandaşları için geçerlidir",
+    tckn: str | None = Field(
+        default=None,
+        description="İnsanın T.C. kimlik numarası, Türkiye Cumhuriyeti vatandaşları için geçerlidir. 11 haneli bir sayı olmalıdır",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    yabanci_kimlik_no: str | None = Field(
+        default=None,
+        description="İnsanın yabancı kimlik numarası, Türkiyede kayıtlı yabancı vatandaşlar için geçerlidir. 99 ile başlayan 11 haneli bir sayı olmalıdır",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    pasaport_no: str | None = Field(
+        default=None,
+        description="İnsanın pasaport numarası, pasaporta sahip herkes için geçerlidir. 9 haneli bir sayı olmalıdır",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
     adres: Adres | None = Field(
         default=None, description="İnsanın adresi, ikametgah adresi, yaşadığı yer"
     )
-    uyruk_bilgisi: str = Field(
-        default="",
+    uyruk_bilgisi: str | None = Field(
+        default=None,
         description="İnsanın uyruk bilgisi, vatandaşlık bilgisi. Türkiye Cumhuriyeti vatandaşı için 'T.C.' veya 'Türkiye' gibi değerler olabilir. Yabancilar için ise ülke adı veya uyruk bilgisi olabilir.",
     )
-    eposta: str = Field(
-        default="",
-        description="e-posta adresi, iletişim için kullanılabilir",
+    eposta: str | None = Field(
+        default=None, description="Elektronik posta adresi, iletişim için kullanılabilir"
     )
-    telefon_no: str = Field(
-        default="",
-        description="telefon numarası, iletişim için kullanılabilir",
+    telefon_no: str | None = Field(
+        default=None, description="telefon numarası, iletişim için kullanılabilir"
     )
-    kep_adresi: str = Field(
-        default="",
+    kep_adresi: str | None = Field(
+        default=None,
         description="KEP (Kayıtlı Elektronik Posta) adresi, resmi yazışmalar için kullanılabilir",
     )
     role: str = Field(
         default="Taraf",
-        description="İnsanın sözleşmedeki rolü, örneğin 'Kiracı', 'Kiraya Veren', 'Vekil', 'Sozlesme tarafi', 'isveren', 'isci' gibi. Taraf olarak da tanımlanabilir. ",
+        description="İnsanın sözleşmedeki rolü, örneğin 'Kiracı', 'Kiraya Veren', 'Vekil', 'İşveren', 'İşçi' gibi. Spesifik bir rol belirtilmemişse Taraf olarak da tanımlanabilir.",
+    )
+    dogum_tarihi: str | None = Field(
+        default=None,
+        description="İnsanın doğum tarihi, YYYY-MM-DD formatında doldurun lütfen.",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    cinsiyet: str | None = Field(
+        default=None,
+        description="İnsanın cinsiyeti, erkek veya kadın olabilir.",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    meslek: str | None = Field(
+        default=None,
+        description="İnsanın mesleği, örneğin 'İşçi', 'Mühendis', 'Avukat', 'Doktor', 'Öğretmen' gibi.",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    vergi_no: str | None = Field(
+        default=None,
+        description="İnsanın vergi numarası, vergi numarası, 10 haneli bir sayı olmalıdır",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    vergi_dairesi: str | None = Field(
+        default=None,
+        description="İnsanın bağlı olduğu vergi dairesi, örneğin 'Yeğenbey Vergi Dairesi",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
 
 
 class Sirket(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
-        description="Döküman icinde bulunan tuzel kisileri yani sirketler, kamukurumlari, dernekler, vakiflar veya organizasyonlari tanimlar. Bu sirketler, sözleşmeyi imzalayan veya sözleşmede adı geçen tuzel kişilerdir.",
+        description="Doküman içinde bulunan tüzel kişileri yani şirketler, kamu kuruluşları, dernekler, vakıflar veya organizasyonlari tanımlar. Bu şirketler, sözleşmeyi imzalayan veya sözleşmede adı geçen tüzel kişilerdir.",
         cardinality=True,
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
 
-    unvan: str = Field(
-        default="",
-        description="Şirketin ticaret unvani, resmi adı",
+    unvan: str | None = Field(
+        default=None,
+        description="Şirketin ticari unvanı, resmi adı",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    vkn: str = Field(
-        default="",
+    vkn: str | None = Field(
+        default=None,
         description="Şirketin vergi kimlik numarası, vergi numarası, 10 haneli bir sayı olmalıdır",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
     adres: Adres | None = Field(
         default=None,
-        description="Şirketin adresi, işyeri adresi. Cadde, sokak, il, ilce, mahelle, kapi no, posta kodu, ulke gibi bilgiler içerebilir",
+        description="Şirketin adresi, işyeri adresi. Cadde, sokak, il, ilçe, mahalle, kapı no, posta kodu, ülke gibi bilgiler içerebilir",
     )
-    kepadresi: str = Field(
-        default="",
+    kepadresi: str | None = Field(
+        default=None,
         description="Şirketin KEP (Kayıtlı Elektronik Posta) adresi, resmi yazışmalar için kullanılabilir",
     )
-    mersisno: str = Field(
-        default="",
-        description="Şirketin MERSİS numarası, Türkiye'de ticaret sicil kaydı için kullanılan numara",
+    mersisno: str | None = Field(
+        default=None,
+        description="Şirketin 16 haneli MERSİS numarası, Türkiye'de ticaret sicil kaydı için kullanılan numara",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
     role: str = Field(
         default="Taraf",
-        description="Sirketin sözleşmedeki rolü, örneğin 'Kiracı', 'Kiraya Veren', 'Vekil', 'Sozlesme tarafi', 'isveren', 'isci' gibi. Taraf olarak da tanımlanabilir. ",
+        description="İnsanın sözleşmedeki rolü, örneğin 'Kiracı', 'Kiraya Veren', 'Vekil', 'İşveren', 'İşçi' gibi. Spesifik bir rol belirtilmemişse Taraf olarak da tanımlanabilir.",
     )
 
 
@@ -170,25 +207,25 @@ class SozlesmeBaslangicTarihi(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
         description="""
-        Sozlesmenin baslangic tarihini belirler.Cogunlukla sozlesmenin baslangic tarihi, sozlesmenin imzalandigi tarih veya sozlesmenin yurutulecegi tarih olarak kullanilir.
-        Belirlenebiliyorsa YYYY-MM-DD formatında doldurun lutfen. Eger belirlenemiyorsa 0000-00-00 olarak tanimlayin ve aciklama alaninda sebebini veya belirsiz yapan cumleyi yazin.
+        Sözleşmenin başlangıç tarihini belirler.Çoğunlukla sözleşmenin başlangıç tarihi, sözleşmenin imzalandığı tarih veya sözleşmenin yürürlüğe girdiği tarih olarak kullanılır.
+        Belirlenebiliyorsa YYYY-MM-DD formatında doldurun. Eğer belirlenemiyorsa açıklama alanında sebebini veya belirsiz yapan cümleyi yazın.
         """,
         cardinality=True,
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
-    baslangic_tarihi: str = Field(
-        default="",
-        description="Sozlesmenin başlangıç tarihi, sözleşmenin yürürlüğe girdiği tarih. YYYY-MM-DD formatında doldurun lutfen. Eger belirlenemiyorsa 0000-00-00 olarak tanimlayin.",
+    baslangic_tarihi: str | None = Field(
+        default=None,
+        description="Sözleşmenin başlangıç tarihi, sözleşmenin yürürlüğe girdiği tarih. YYYY-MM-DD formatında doldurun lütfen.",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    aciklama: str = Field(
-        default="",
-        description="Sozlemenin baglangic tarihi belirlenemiyorsa sebebi veya aciklamasi. Ozellikle 'imza tarihinde yururluge girer' gibi ifadeler kullanilmissa 'imza_tarihinde_yururluge_girer' alanini True olarak tanimlayin",
+    aciklama: str | None = Field(
+        default=None,
+        description="Sözleşmenin başlangıç tarihi belirlenemiyorsa sebebi veya açıklaması. Özellikle 'imza tarihinde yürürlüğe girer' gibi ifadeler kullanılırsa 'imza_tarihinde_yururluge_girer' alanını True olarak tanımlayın",
     )
     imza_tarihinde_yururluge_girer: bool = Field(
         default=False,
-        description="Eger sozlesme imza tarihinde yururluge giriyorsa True olarak tanimlayin. Sozlesme baslangic tarihi belirlenebiliyorsa False olarak tanimlayin",
+        description="Eğer sözleşme imza tarihinde yürürlüğe giriyorsa True olarak tanımlayın. Sözleşme başlangıç tarihi belirlenebiliyorsa False olarak tanımlayın",
     )
 
 
@@ -196,24 +233,22 @@ class SozlesmeBitisTarihi(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
         description="""
-        Sozlesmenin bitis tarihini belirler.Cogunlukla sozlesmenin bitis tarihi ayri bir madde olarak belirtilir.
-        Bazen bitis tarihi Sozlesme baslangic tarihindne itibaren bir sure sonra da belirtilebilir.
-        Belirlenebiliyorsa YYYY-MM-DD formatında doldurun lutfen. Eger belirlenemiyorsa 0000-00-00 olarak tanimlayin ve aciklama alaninda sebebini veya belirsiz yapan cumleyi yazin.
+        Sözleşmenin bitiş tarihini belirler. Çoğunlukla sözleşmenin bitiş tarihi ayrı bir madde olarak belirtilir.
+        Bazen bitiş tarihi Sözleşme başlangıç tarihinden itibaren bir süre sonra da belirtilebilir.
+        Belirlenebiliyorsa YYYY-MM-DD formatında doldurun lütfen. Eğer belirlenemiyorsa None olarak tanımlayın ve açıklama alanında sebebini veya belirsiz yapan cümleyi yazın.
         """,
         cardinality=True,
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
-    bitis_tarihi: str = Field(
-        default="",
-        description="Sozlesmenin bitis tarihi, sözleşmenin sona erdigi tarih. YYYY-MM-DD formatında doldurun lutfen",
-        config=NodeFieldConfig(
-            index_type=NebulaIndexType.EXACT,
-        ),
+    bitis_tarihi: str | None = Field(
+        default=None,
+        description="Sözleşmenin bitiş tarihi, sözleşmenin sona erdiği tarih. YYYY-MM-DD formatında doldurun lütfen",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    aciklama: str = Field(
-        default="",
-        description="Sozlemenin bitis tarihi belirlenemiyorsa sebebi veya aciklamasi.",
+    aciklama: str | None = Field(
+        default=None,
+        description="Sözleşmenin bitiş tarihi belirlenemiyorsa sebebi veya açıklaması.",
     )
 
 
@@ -221,16 +256,16 @@ class SozlesmeYururluk(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
         description="""
-            Sozlesmenin yururlulukte olup olmadigini belirlet. Baslangic tarihi bugunden sonraki bri tarih ise sozlesme yururlukte degildir. Bitis tarihi bugunden onceki bir tarih ise sozlesme yururlukte degildir.
-            Yururlulukte olan sozlesmeler, baslangic tarihi bugunden onceki bir tarih ve bitis tarihi bugunden sonraki bir tarih olan sozlesmelerdir. Bu durumda sozlesme yururlukte kabul edilir. Kesinlikle emin degilsiniz lutfen None olarak tanimlayin.
+            Sözleşmenin yürürlükte olup olmadığını belirlet. Başlangıç tarihi bugünden sonraki bir tarih ise sözleşme yürürlükte değildir. Bitiş tarihi bugünden önceki bir tarih ise sözleşme yürürlükte değildir.
+            Yürürlükte olan sözleşmeler, başlangıç tarihi bugünden önceki bir tarih ve bitiş tarihi bugünden sonraki bir tarih olan sözleşmelerdir. Bu durumda sözleşme yürürlükte kabul edilir. Kesinlikle emin değilsiniz lütfen None olarak tanımlayın.
             """,
         cardinality=False,
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
-    sozlesme_yururluk: bool = Field(
-        default=False,
-        description="Sozlesmenin yururlukte olup olmadigini belirler. True ise sozlesme yururluktedir, False ise sozlesme yururlukte degildir.",
+    sozlesme_yururluk: bool | None = Field(
+        default=None,
+        description="Sözleşmenin yürürlükte olup olmadığını belirler. True ise sözleşme yürürlüktedir, False ise sözleşme yürürlükte değildir.",
     )
 
 
@@ -246,8 +281,8 @@ class SozlesmeSure(BaseNode):
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
-    sozlesme_suresi: str = Field(
-        default="",
+    sozlesme_suresi: str | None = Field(
+        default=None,
         description="Sozlesmenin suresi, sozlesmenin gecerlilik suresi. Yil, ay veya gun seklinde belirtilmis olabilir. Ornek 1 yil 3 ay veya 3 ay 15 gun gibi.",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
@@ -261,8 +296,8 @@ class SozlesmeKonu(BaseNode):
         ask_llm=False,
         nodeclass_to_be_created_automatically=None,
     )
-    konu: str = Field(
-        default="",
+    konu: str | None = Field(
+        default=None,
         description="Sozlesmenin konusunu belirler. Sozlesmenin amacini ve kapsamini belirler. Sozlesmenin ne ile ilgili oldugunu, hangi hizmetlerin veya urunlerin saglanacagini burada belirtilir. Ozellikle belirtilmemisse sozlesmenin 1-3 cumlelik ozeti ile tanimlanabilir.",
     )
 
@@ -288,13 +323,13 @@ class Teminat(BaseNode):
         ask_llm=True,
         nodeclass_to_be_created_automatically=Teminatlar,
     )
-    teminat_miktari: str = Field(
-        default="",
+    teminat_miktari: str | None = Field(
+        default=None,
         description="Sozlesmede belirtilen herhangi bir teminatin miktari. Teminat miktari, para birimi ile birlikte belirtilmelidir. Ornegin '1000 TL', '500 USD', '2000 EUR' gibi.",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    teminat_tipi: str = Field(
-        default="",
+    teminat_tipi: str | None = Field(
+        default=None,
         description="Teminatin tipi belirtilmelidir. Ornegin 'Banka Teminat Mektubu', 'Banka Hesap Blokesi', 'Altin', 'Doviz', 'Para' gibi. Teminat tipi, teminatin ne sekilde saglandigini belirtir.",
     )
 
@@ -307,8 +342,8 @@ class UyusmazlikCozumYeri(BaseNode):
         ask_llm=True,
         nodeclass_to_be_created_automatically=None,
     )
-    uyusmazlik_cozum_yeri: str = Field(
-        default="",
+    uyusmazlik_cozum_yeri: str | None = Field(
+        default=None,
         description="Uyuşmazlık çözüm yeri, uyuşmazlık halinde başvurulacak mahkeme veya arabuluculuk merkezi. Örneğin 'İstanbul Mahkemeleri', 'Ankara Arabuluculuk Merkezi' gibi.",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
@@ -340,7 +375,7 @@ class Ekler(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     ek_var: bool = Field(
-        default=False, description="En az bir ek varsa True, yoksa zaten yaratilmaz."
+        default=True, description="En az bir ek varsa True, yoksa zaten yaratilmaz."
     )
 
 
@@ -352,4 +387,72 @@ class Ek(BaseNode):
         ask_llm=True,
         nodeclass_to_be_created_automatically=Ekler,
     )
-    ek_aciklama: str = Field(default="", description="sozlemede belirtilen ekin aciklamasi. ")
+    ek_aciklama: str | None = Field(
+        default=None, description="sozlemede belirtilen ekin aciklamasi. "
+    )
+
+
+class FesihMaddeleri(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Predefined",
+        cardinality=False,
+        ask_llm=False,
+        nodeclass_to_be_created_automatically=None,
+    )
+    fesih_var: bool = Field(
+        default=True, description="En az bir fesih maddesi varsa True, yoksa zaten yaratilmaz."
+    )
+
+
+class FesihMaddesi(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="""
+        Sözleşmenin içinde herhangi bir fesih maddesi olup olmadığını belirler. En az bir fesih maddesi varsa true olur yoksa bu node yaratılmaz.
+        """,
+        cardinality=True,
+        ask_llm=True,
+        nodeclass_to_be_created_automatically=FesihMaddeleri,
+    )
+    fesih_maddesi: str | None = Field(
+        default=None, description="Sozlesmede belirtilen fesih maddesi. "
+    )
+
+
+class FaizMaddeleri(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Predefined",
+        cardinality=False,
+        ask_llm=False,
+        nodeclass_to_be_created_automatically=None,
+    )
+    faiz_var: bool = Field(
+        default=True,
+        description="En az bir faize iliskin madde varsa True, yoksa zaten yaratilmaz.",
+    )
+
+
+class FaizMaddesi(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="""
+        Sozlesmede uygulanacak faiz veya temerrüt faizi ile ilgili maddeleri tanimlar. Her farkli faiz tipi veya orani icin ayri bir node olusturun.
+        """,
+        cardinality=True,
+        ask_llm=True,
+        nodeclass_to_be_created_automatically=FaizMaddeleri,
+    )
+    faiz_orani: str = Field(
+        default="",
+        description="Faiz orani. Ornek: 'Yıllık %10', 'Aylık %1,5', 'TCMB politika faizi + %3' gibi.",
+    )
+    faiz_turu: str | None = Field(
+        default=None,
+        description="Faizin turu. Ornek: 'Temerrüt Faizi', 'Yasal Faiz', 'Avans Faizi' gibi.",
+    )
+    faiz_hesaplama_aciklamasi: str | None = Field(
+        default=None,
+        description="Faizin nasil hesaplanacagini veya hangi kosullarda uygulanacagini aciklayan cumle veya madde metni.",
+    )

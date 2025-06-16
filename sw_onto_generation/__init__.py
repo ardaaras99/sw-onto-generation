@@ -7,6 +7,7 @@ from enum import StrEnum
 class LegalContract(StrEnum):
     KIRA = "kira"
     IS = "iş"
+    ABONELIK = "abonelik"
 
 
 class KullanımKlavuzu(StrEnum):
