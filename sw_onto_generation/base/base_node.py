@@ -23,9 +23,9 @@ class BaseNode(BaseModel):
         description="Bu nodeu çıkarırken nasıl bir mantık kullandın",
         config=NodeFieldConfig(index_type=NebulaIndexType.VECTOR),
     )
-    reference_text: str = Field(
-        description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz"
-    )
+    # reference_text: str = Field(
+    #     description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz"
+    # )
 
     @classmethod
     def append_field_description(
