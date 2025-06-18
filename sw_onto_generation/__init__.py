@@ -6,13 +6,12 @@ from enum import StrEnum
 
 class LegalContract(StrEnum):
     KIRA = "kira"
-    IS = "iş"
     ABONELIK = "abonelik"
 
 
-class KullanımKlavuzu(StrEnum):
-    DONANIM = "donanım"
-    YAZILIM = "yazılım"
+# class KullanımKlavuzu(StrEnum):
+#     DONANIM = "donanım"
+#     YAZILIM = "yazılım"
 
 
 # Automatically collect all StrEnum classes defined in this module

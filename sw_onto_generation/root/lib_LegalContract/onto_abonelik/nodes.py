@@ -3,7 +3,12 @@ from typing import ClassVar
 from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
-from sw_onto_generation.base.configs import NebulaIndexType, NodeFieldConfig, NodeModelConfig
+from sw_onto_generation.base.configs import (
+    HowToExtract,
+    NebulaIndexType,
+    NodeFieldConfig,
+    NodeModelConfig,
+)
 from sw_onto_generation.common.common_nodes import Adres
 
 
@@ -15,7 +20,7 @@ class AbonelikHizmeti(BaseNode):
         description="""Bu bir internet, telefon, elektrik, su, dijital içerik vb. hizmet olabilir.
         Tarife / paket adı, hizmet hızı, kota veya kanal sayısı gibi bilgiler içerebilir.""",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -40,7 +45,7 @@ class AbonelikBedeli(BaseNode):
         nodetag_index=False,
         description="Abonelik için ödenecek periyodik ücret (aylık, yıllık vb.)",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     abonelik_bedeli: float = Field(description="Ücret miktarı (sayı)")
@@ -59,7 +64,7 @@ class KurulumBedeli(BaseNode):
         nodetag_index=False,
         description="Başlangıçta ödenen kurulum / aktivasyon ücreti",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     kurulum_ucreti: str = Field(description="Kurulum ücreti (örn. '500 TL')")
@@ -71,7 +76,7 @@ class CaymaBedeli(BaseNode):
         description="Taahhüt süresi dolmadan fesih hâlinde ödenecek cayma bedeli",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     cayma_bedeli: str = Field(description="Cayma bedeli miktarı ve para birimi")
@@ -82,7 +87,7 @@ class Ekipmanlar(BaseNode):
         description="Abonelik kapsamında kullanıcıya tahsis edilen cihaz/donanım var mı?",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
     ekipman_var: bool | None = Field(default=True, description="En az bir ekipman varsa True")
@@ -93,7 +98,7 @@ class Ekipman(BaseNode):
         description="""Abonelik ile verilen modem, router, set‑top box, sayaç vb. gibi her bir cihazı tanımlar.""",
         nodetag_index=False,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=Ekipmanlar,
     )
     ekipman_adi: str = Field(description="Cihaz adı / modeli (örn. 'ZXHN H298A Modem')")
@@ -108,7 +113,7 @@ class HizmetSeviyesi(BaseNode):
         description="""Hız, kota, kesintisiz hizmet garantisi gibi SLA / QoS parametrelerini tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     hiz: str | None = Field(default=None, description="İnternet hızı (örn. '100 Mbps')")
@@ -123,7 +128,7 @@ class AbonelikNumarasi(BaseNode):
         description="""Hizmet sağlayıcı tarafından verilen abone / müşteri numarasını tanımlar.""",
         nodetag_index=False,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     abonelik_no: str = Field(
@@ -138,7 +143,7 @@ class FaturaBilgisi(BaseNode):
         description="""Abonelik kapsamında düzenlenen faturalara ilişkin temel bilgileri tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     fatura_kesim_tarihi: str | None = Field(default=None, description="Fatura kesim günü / tarihi")
@@ -154,7 +159,7 @@ class TaksitSecenegi(BaseNode):
         description="""Abonelik bedelinin taksitlendirilmiş ödeme planını tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     taksit_sayisi: int | None = Field(default=None, description="Toplam taksit sayısı")
@@ -171,7 +176,7 @@ class EkUcretler(BaseNode):
         description="""Abonelik kapsamında ek / ilave ücret bulunup bulunmadığını gösterir.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
     ek_ucret_var: bool | None = Field(default=True, description="En az bir ek ücret varsa True")
@@ -182,7 +187,7 @@ class EkUcret(BaseNode):
         description="""Abonelik kapsamında tahsil edilen her bir ek ücret kalemini tanımlar.""",
         nodetag_index=False,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=EkUcretler,
     )
     ucret_adi: str = Field(description="Ücretin adı / türü (örn. 'Damga Vergisi')")
@@ -195,7 +200,7 @@ class KampanyaBilgisi(BaseNode):
         description="""Aboneliğe uygulanan kampanya / promosyon detaylarını tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     kampanya_adi: str | None = Field(default=None, description="Kampanyanın adı")
@@ -215,7 +220,7 @@ class BildirimBilgisi(BaseNode):
         description="""Aboneye yapılacak bildirimlerin yöntemi ve adres bilgilerini tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     bildirim_metodu: str | None = Field(
@@ -234,7 +239,7 @@ class GecikmeFaizi(BaseNode):
         description="""Ödemelerin gecikmesi hâlinde uygulanacak faiz / ceza bilgilerini tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     faiz_orani: str | None = Field(default=None, description="Gecikme faiz oranı (örn. '%1,5')")
@@ -249,7 +254,7 @@ class ServisKesinti(BaseNode):
         description="""Hizmet kesintisi hâlinde uygulanacak prosedür ve tazminat bilgilerini tanımlar.""",
         nodetag_index=False,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     kesinti_sartlari: str | None = Field(
