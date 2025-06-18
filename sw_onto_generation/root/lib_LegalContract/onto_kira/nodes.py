@@ -65,8 +65,8 @@ class Demirbaslar(BaseNode):
         how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    demirbas_var: bool | None = Field(
-        default=None, description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?"
+    demirbas_var: bool = Field(
+        default=True, description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?"
     )
 
 
