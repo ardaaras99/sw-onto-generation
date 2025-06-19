@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from sw_onto_generation.base.configs import (
     HowToExtract,
@@ -8,6 +8,10 @@ from sw_onto_generation.base.configs import (
     NodeFieldConfig,
     NodeModelConfig,
 )
+from sw_onto_generation.base.id_generator import SnowflakeGenerator
+
+# Global instance of the Snowflake generator
+_snowflake_generator = SnowflakeGenerator()
 
 
 class BaseNode(BaseModel):
@@ -23,9 +27,15 @@ class BaseNode(BaseModel):
         description="Bu nodeu çıkarırken nasıl bir mantık kullandın",
         config=NodeFieldConfig(index_type=NebulaIndexType.VECTOR),
     )
-    # reference_text: str = Field(
-    #     description="Bu nodeu çıkarırken hangi metinleri kullandın, direkt kopyalayarak buraya yaz"
-    # )
+
+    node_id: int = Field(
+        default=None,
+        description="LLM BUNU KENDIN YARATMA, DEFAULT FACTORYE BIRAK.",
+    )
+
+    @field_validator("node_id", mode="after")
+    def validate_node_id(self) -> int:
+        return _snowflake_generator.generate_id()
 
     @classmethod
     def append_field_description(cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " ") -> None:
