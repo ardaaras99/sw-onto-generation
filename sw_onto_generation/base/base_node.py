@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from sw_onto_generation.base.configs import (
     HowToExtract,
@@ -28,7 +28,35 @@ class BaseNode(BaseModel):
         config=NodeFieldConfig(index_type=NebulaIndexType.VECTOR),
     )
 
-    node_id: int = _snowflake_generator.generate_id()
+    # Define node_id with default=None so it can be set during validation
+    node_id: int = Field(default=None)
+
+    @field_validator("node_id")
+    def validate_node_id(self, v: int) -> int:
+        """
+        Validate that the node_id is a valid 64-bit integer.
+        If not provided (None), a new ID will be generated.
+        """
+        # Generate a new ID if None was provided
+        if v is None:
+            return _snowflake_generator.generate_id()
+
+        # Ensure the provided ID is valid
+        if not isinstance(v, int):
+            raise ValueError("node_id must be an integer")
+
+        # Check if it's within 64-bit range
+        max_64bit = (1 << 63) - 1
+        min_64bit = -(1 << 63)
+
+        if not (min_64bit <= v <= max_64bit):
+            raise ValueError(f"node_id {v} exceeds 64-bit integer limits")
+
+        # Check bit length
+        if v.bit_length() > 64:
+            raise ValueError(f"node_id has {v.bit_length()} bits, exceeding the 64-bit limit")
+
+        return v
 
     @classmethod
     def append_field_description(cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " ") -> None:
