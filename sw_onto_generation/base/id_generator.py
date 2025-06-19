@@ -34,6 +34,10 @@ class SnowflakeGenerator:
     MACHINE_ID_SHIFT = SEQUENCE_BITS
     TIMESTAMP_SHIFT = SEQUENCE_BITS + MACHINE_ID_BITS
 
+    # 64-bit integer limits
+    MAX_64BIT_INT = (1 << 63) - 1  # Maximum signed 64-bit integer
+    MIN_64BIT_INT = -(1 << 63)  # Minimum signed 64-bit integer
+
     def __init__(self, machine_id: int = 1):
         """
         Initialize the Snowflake ID generator.
@@ -76,6 +80,9 @@ class SnowflakeGenerator:
         # Compose the ID from its components
         snowflake_id = ((timestamp - self.EPOCH) << self.TIMESTAMP_SHIFT) | (self.machine_id << self.MACHINE_ID_SHIFT) | self.sequence
 
+        # Validate the generated ID
+        self._validate_64bit_integer(snowflake_id)
+
         return snowflake_id
 
     def _current_timestamp(self) -> int:
@@ -88,3 +95,21 @@ class SnowflakeGenerator:
         while timestamp <= self.last_timestamp:
             timestamp = self._current_timestamp()
         return timestamp
+
+    def _validate_64bit_integer(self, snowflake_id: int) -> None:
+        """
+        Validate that the generated ID is a valid 64-bit integer.
+
+        Args:
+            snowflake_id: The generated Snowflake ID to validate
+
+        Raises:
+            ValueError: If the ID exceeds 64-bit integer limits
+        """
+        if not (self.MIN_64BIT_INT <= snowflake_id <= self.MAX_64BIT_INT):
+            raise ValueError(f"Generated ID {snowflake_id} exceeds 64-bit integer limits")
+
+        # Check bit length to ensure it doesn't exceed 64 bits
+        bit_length = snowflake_id.bit_length()
+        if bit_length > 64:
+            raise ValueError(f"Generated ID has {bit_length} bits, exceeding the 64-bit limit")
