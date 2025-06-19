@@ -21,7 +21,7 @@ def get_specific_module_name(lib_name: str, ontology_name: str, module_type: Lit
     return f"sw_onto_generation.root.lib_{lib_name}.onto_{ontology_name}.{module_type}"
 
 
-def find_classes_in_modules(module_names: list[str]):
+def find_classes_in_modules(module_names: list[str]) -> tuple[list[type[BaseNode]], list[type[BaseRelation]]]:
     node_classes = set()
     relation_classes = set()
     for module_name in module_names:
@@ -42,7 +42,7 @@ def find_classes_in_modules(module_names: list[str]):
     return list(node_classes), list(relation_classes)
 
 
-def get_all_common_and_specific_root_classes(lib_name: str, ontology_name: str):
+def get_all_common_and_specific_root_classes(lib_name: str, ontology_name: str) -> tuple[list[type[BaseNode]], list[type[BaseRelation]]]:
     check_valid_lib_and_ontology(lib_name, ontology_name)
 
     module_names = [
@@ -55,7 +55,7 @@ def get_all_common_and_specific_root_classes(lib_name: str, ontology_name: str):
     return find_classes_in_modules(module_names)
 
 
-def get_all_common_and_root_classes():
+def get_all_common_and_root_classes() -> tuple[list[type[BaseNode]], list[type[BaseRelation]]]:
     node_module_names = []
 
     for lib_name in DIR_STRUCTURE:
