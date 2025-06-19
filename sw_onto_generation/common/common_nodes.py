@@ -16,7 +16,7 @@ class GeneralDocumentInfo(BaseNode):
         nodetag_index=False,
         description="Doküman hakkında genel bilgileri tanımlar, sözleşme ismi veya başlığı en önemli bilgidir. Her sözleşmede mutlaka bulunur.",
         cardinality=False,
-        how_to_extract=HowToExtract.CASE_3,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     doküman_tipi: str = Field(
