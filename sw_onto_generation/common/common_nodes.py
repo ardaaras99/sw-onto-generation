@@ -302,7 +302,7 @@ class Teminatlar(BaseNode):
         nodetag_index=True,
         description="Predefined",
         cardinality=False,
-        how_to_extract=HowToExtract.CASE_0,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
     teminat_var: bool = Field(default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
