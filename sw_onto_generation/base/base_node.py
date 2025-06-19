@@ -28,9 +28,7 @@ class BaseNode(BaseModel):
     # )
 
     @classmethod
-    def append_field_description(
-        cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " "
-    ) -> None:
+    def append_field_description(cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " ") -> None:
         """
         Field'un açıklamasının sonuna eklenecek açıklama ekler.
 

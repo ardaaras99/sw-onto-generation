@@ -16,15 +16,11 @@ class HowToExtract(StrEnum):
 
 
 class NodeFieldConfig(BaseModel):
-    index_type: NebulaIndexType | None = Field(
-        default=None, description="Nebula graph'de field'un index type'ı"
-    )
+    index_type: NebulaIndexType | None = Field(default=None, description="Nebula graph'de field'un index type'ı")
 
 
 class RelationFieldConfig(BaseModel):
-    index_type: NebulaIndexType | None = Field(
-        default=None, description="Nebula graph'de field'un index type'ı"
-    )
+    index_type: NebulaIndexType | None = Field(default=None, description="Nebula graph'de field'un index type'ı")
     default_relation_type: str | None = Field(
         default=None,
         description="Eğer bu field bir relation ise, bu field'un default relation type'ı nedir. Eğer relation değilse None olmalı",
@@ -37,9 +33,7 @@ class NodeModelConfig(BaseModel):
     description: str = Field(description=" LLMe nodu tanıtmak için kullanılır")
     cardinality: bool = Field(description="LLMe node'un birden fazla olup olmadığını belirtir")
     how_to_extract: HowToExtract = Field(description="LLM e sorup sorulmayacağını belirtir")
-    nodeclass_to_be_created_automatically: type[BaseModel] | None = Field(
-        description="Bu node'un oluşturulması için kullanılacak base node'un tipi"
-    )
+    nodeclass_to_be_created_automatically: type[BaseModel] | None = Field(description="Bu node'un oluşturulması için kullanılacak base node'un tipi")
 
     model_config = {"extra": "forbid"}
     # extra_fields: list[FieldInfo] = Field(default=[], description="Node'a eklenecek ekstra field'lar")
@@ -48,9 +42,7 @@ class NodeModelConfig(BaseModel):
 class RelationModelConfig(BaseModel):
     # model_config = {"arbitrary_types_allowed": True}
     edge_index: bool = Field(default=False, description="Index of the edge in Nebula Graph")
-    description: str | None = Field(
-        default=None, description="LLMe Relation'u tanıtmak için kullanılır"
-    )
+    description: str | None = Field(default=None, description="LLMe Relation'u tanıtmak için kullanılır")
     ask_llm: bool = Field(
         default=True,
         description="Eğer relation iki node un var olması durumunda otomatik bir şekilde oluşuyorsa False, yoksa True",

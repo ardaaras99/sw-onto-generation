@@ -9,19 +9,7 @@ class LegalContract(StrEnum):
     ABONELIK = "abonelik"
 
 
-# class KullanımKlavuzu(StrEnum):
-#     DONANIM = "donanım"
-#     YAZILIM = "yazılım"
-
-
-# Automatically collect all StrEnum classes defined in this module
-
-
-ENUM_CLASSES = [
-    cls
-    for name, cls in inspect.getmembers(sys.modules[__name__])
-    if inspect.isclass(cls) and issubclass(cls, StrEnum) and cls is not StrEnum
-]
+ENUM_CLASSES = [cls for name, cls in inspect.getmembers(sys.modules[__name__]) if inspect.isclass(cls) and issubclass(cls, StrEnum) and cls is not StrEnum]
 #! add enum classes to the structure
 
 DIR_STRUCTURE = {}

@@ -65,9 +65,7 @@ class Demirbaslar(BaseNode):
         how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    demirbas_var: bool = Field(
-        default=True, description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?"
-    )
+    demirbas_var: bool = Field(default=True, description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?")
 
 
 class Demirbas(BaseNode):
@@ -93,9 +91,7 @@ class KiraBedeli(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     kira_bedeli: float | None = Field(default=None, description="Kira bedeli miktari")
-    para_birimi: str | None = Field(
-        default=None, description="Kira bedelinin para birimi. Ornegin TL, USD, EUR gibi"
-    )
+    para_birimi: str | None = Field(default=None, description="Kira bedelinin para birimi. Ornegin TL, USD, EUR gibi")
     odeme_periyodu: str | None = Field(
         default=None,
         description="Kira bedelinin odeme periyodu. Ornegin Aylık, Yıllık gibi. Eger belirtilmemisse Aylık olarak alinir.",
@@ -118,9 +114,7 @@ class KiraAmaci(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    kira_amaci: str | None = Field(
-        default=None, description="sozlesmedeki kiralanan seyin ne amacla kiralandigi"
-    )
+    kira_amaci: str | None = Field(default=None, description="sozlesmedeki kiralanan seyin ne amacla kiralandigi")
 
 
 class SimdikiDurum(BaseNode):
@@ -178,15 +172,9 @@ class GiderSorumluluklari(BaseNode):
         description="Elektrik giderinin hangi tarafça ödeneceği. 'Kiracı', 'Kiraya Veren' vb.",
     )
     su: str | None = Field(default=None, description="Su giderinin hangi tarafça ödeneceği.")
-    dogalgaz: str | None = Field(
-        default=None, description="Doğalgaz giderinin hangi tarafça ödeneceği."
-    )
-    aidat: str | None = Field(
-        default=None, description="Site/ apartman aidatının hangi tarafça ödeneceği."
-    )
-    emlak_vergisi: str | None = Field(
-        default=None, description="Emlak vergisi veya benzeri vergilerin hangi tarafça ödeneceği."
-    )
+    dogalgaz: str | None = Field(default=None, description="Doğalgaz giderinin hangi tarafça ödeneceği.")
+    aidat: str | None = Field(default=None, description="Site/ apartman aidatının hangi tarafça ödeneceği.")
+    emlak_vergisi: str | None = Field(default=None, description="Emlak vergisi veya benzeri vergilerin hangi tarafça ödeneceği.")
     diger_giderler: str | None = Field(
         default=None,
         description="Diğer gider kalemleri ve bunların sorumlulukları hakkında açıklama.",
@@ -210,12 +198,8 @@ class Sigorta(BaseNode):
         default=None,
         description="Sigorta teminat tutarı veya poliçe bedeli. Para birimi ile birlikte.",
     )
-    sigorta_saglayan: str | None = Field(
-        default=None, description="Sigorta şirketi veya poliçeyi düzenleyen taraf."
-    )
-    sigorta_suresi: str | None = Field(
-        default=None, description="Sigortanın geçerli olduğu süre veya poliçe bitiş tarihi."
-    )
+    sigorta_saglayan: str | None = Field(default=None, description="Sigorta şirketi veya poliçeyi düzenleyen taraf.")
+    sigorta_suresi: str | None = Field(default=None, description="Sigortanın geçerli olduğu süre veya poliçe bitiş tarihi.")
     sigorta_aciklama: str | None = Field(
         default=None,
         description="Sigorta ile ilgili ek açıklamalar, hangi tarafın masrafları üstleneceği vb.",

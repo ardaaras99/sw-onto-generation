@@ -28,12 +28,8 @@ class AbonelikHizmeti(BaseNode):
         description="Hizmet türü (internet, mobil, elektrik vb.)",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    tarife_adi: str | None = Field(
-        default=None, description="Tarife veya paket adı (Örn. 'Fiber 100 Mbps')"
-    )
-    hizmet_aciklamasi: str | None = Field(
-        default=None, description="Hizmetin detaylı açıklaması / kapsamı"
-    )
+    tarife_adi: str | None = Field(default=None, description="Tarife veya paket adı (Örn. 'Fiber 100 Mbps')")
+    hizmet_aciklamasi: str | None = Field(default=None, description="Hizmetin detaylı açıklaması / kapsamı")
     hizmet_adresi: Adres | None = Field(
         default=None,
         description="Hizmetin sağlandığı adres (sabit hizmetler için). Mobil hizmetlerde boş bırakılabilir.",
@@ -51,12 +47,8 @@ class AbonelikBedeli(BaseNode):
     abonelik_bedeli: float = Field(description="Ücret miktarı (sayı)")
     para_birimi: str = Field(default="TL", description="Para birimi (TL, USD, EUR vb.)")
     odeme_periyodu: str = Field(default="Aylık", description="Ödeme periyodu (Aylık, Yıllık vb.)")
-    odeme_yontemi: str | None = Field(
-        default=None, description="Ödeme yöntemi (otomatik ödeme, kredi kartı, havale vb.)"
-    )
-    indirim_aciklamasi: str | None = Field(
-        default=None, description="Kampanya / indirim varsa açıklaması"
-    )
+    odeme_yontemi: str | None = Field(default=None, description="Ödeme yöntemi (otomatik ödeme, kredi kartı, havale vb.)")
+    indirim_aciklamasi: str | None = Field(default=None, description="Kampanya / indirim varsa açıklaması")
 
 
 class KurulumBedeli(BaseNode):
@@ -103,9 +95,7 @@ class Ekipman(BaseNode):
     )
     ekipman_adi: str = Field(description="Cihaz adı / modeli (örn. 'ZXHN H298A Modem')")
     seri_no: str | None = Field(default=None, description="Seri numarası veya IMEI vb.")
-    depozito: str | None = Field(
-        default=None, description="Cihaz için alınan depozito / teminat (örn. '300 TL')"
-    )
+    depozito: str | None = Field(default=None, description="Cihaz için alınan depozito / teminat (örn. '300 TL')")
 
 
 class HizmetSeviyesi(BaseNode):
@@ -118,9 +108,7 @@ class HizmetSeviyesi(BaseNode):
     )
     hiz: str | None = Field(default=None, description="İnternet hızı (örn. '100 Mbps')")
     kota: str | None = Field(default=None, description="Aylık veri kotası / kWh vb.")
-    kesinti_tazminati: str | None = Field(
-        default=None, description="Hizmet kesintisi halinde uygulanacak tazminat"
-    )
+    kesinti_tazminati: str | None = Field(default=None, description="Hizmet kesintisi halinde uygulanacak tazminat")
 
 
 class AbonelikNumarasi(BaseNode):
@@ -147,9 +135,7 @@ class FaturaBilgisi(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     fatura_kesim_tarihi: str | None = Field(default=None, description="Fatura kesim günü / tarihi")
-    fatura_periyodu: str | None = Field(
-        default="Aylık", description="Fatura periyodu (Aylık, 3-Aylık vb.)"
-    )
+    fatura_periyodu: str | None = Field(default="Aylık", description="Fatura periyodu (Aylık, 3-Aylık vb.)")
     fatura_adresi: Adres | None = Field(default=None, description="Faturaların gönderileceği adres")
     e_fatura: bool | None = Field(default=None, description="E-fatura kullanılıyorsa True")
 
@@ -163,12 +149,8 @@ class TaksitSecenegi(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     taksit_sayisi: int | None = Field(default=None, description="Toplam taksit sayısı")
-    taksit_tutari: str | None = Field(
-        default=None, description="Her bir taksit tutarı (örn. '150 TL')"
-    )
-    toplam_tutar: str | None = Field(
-        default=None, description="Toplam tahsil edilecek tutar (taksitli)"
-    )
+    taksit_tutari: str | None = Field(default=None, description="Her bir taksit tutarı (örn. '150 TL')")
+    toplam_tutar: str | None = Field(default=None, description="Toplam tahsil edilecek tutar (taksitli)")
 
 
 class EkUcretler(BaseNode):
@@ -204,15 +186,9 @@ class KampanyaBilgisi(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     kampanya_adi: str | None = Field(default=None, description="Kampanyanın adı")
-    kampanya_suresi: str | None = Field(
-        default=None, description="Kampanyanın geçerli olduğu süre (örn. '6 Ay')"
-    )
-    indirim_orani: str | None = Field(
-        default=None, description="İndirim oranı veya tutarı (örn. '%20', '50 TL')"
-    )
-    kampanya_aciklama: str | None = Field(
-        default=None, description="Kampanya ile ilgili ek açıklama"
-    )
+    kampanya_suresi: str | None = Field(default=None, description="Kampanyanın geçerli olduğu süre (örn. '6 Ay')")
+    indirim_orani: str | None = Field(default=None, description="İndirim oranı veya tutarı (örn. '%20', '50 TL')")
+    kampanya_aciklama: str | None = Field(default=None, description="Kampanya ile ilgili ek açıklama")
 
 
 class BildirimBilgisi(BaseNode):
@@ -223,15 +199,9 @@ class BildirimBilgisi(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    bildirim_metodu: str | None = Field(
-        default=None, description="Bildirim yöntemi (SMS, E-posta, Posta vb.)"
-    )
-    bildirim_adresi: str | None = Field(
-        default=None, description="Bildirimlerin gönderileceği adres / numara"
-    )
-    tercih_edilen_kanal: str | None = Field(
-        default=None, description="Abonenin tercih ettiği iletişim kanalı"
-    )
+    bildirim_metodu: str | None = Field(default=None, description="Bildirim yöntemi (SMS, E-posta, Posta vb.)")
+    bildirim_adresi: str | None = Field(default=None, description="Bildirimlerin gönderileceği adres / numara")
+    tercih_edilen_kanal: str | None = Field(default=None, description="Abonenin tercih ettiği iletişim kanalı")
 
 
 class GecikmeFaizi(BaseNode):
@@ -243,9 +213,7 @@ class GecikmeFaizi(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     faiz_orani: str | None = Field(default=None, description="Gecikme faiz oranı (örn. '%1,5')")
-    hesaplama_yontemi: str | None = Field(
-        default=None, description="Faizin hesaplanma yöntemi (günlük, aylık vb.)"
-    )
+    hesaplama_yontemi: str | None = Field(default=None, description="Faizin hesaplanma yöntemi (günlük, aylık vb.)")
     aciklama: str | None = Field(default=None, description="Ek açıklama veya şartlar")
 
 
@@ -257,12 +225,6 @@ class ServisKesinti(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    kesinti_sartlari: str | None = Field(
-        default=None, description="Kesinti gerçekleştiğinde geçerli şartlar"
-    )
-    tazminat_miktari: str | None = Field(
-        default=None, description="Kesinti durumunda ödenecek tazminat (örn. '1 günlük ücret')"
-    )
-    para_birimi: str | None = Field(
-        default=None, description="Tazminat para birimi (TL, USD, EUR vb.)"
-    )
+    kesinti_sartlari: str | None = Field(default=None, description="Kesinti gerçekleştiğinde geçerli şartlar")
+    tazminat_miktari: str | None = Field(default=None, description="Kesinti durumunda ödenecek tazminat (örn. '1 günlük ücret')")
+    para_birimi: str | None = Field(default=None, description="Tazminat para birimi (TL, USD, EUR vb.)")

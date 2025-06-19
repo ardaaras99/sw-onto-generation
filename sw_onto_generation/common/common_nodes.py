@@ -79,12 +79,8 @@ class Adres(BaseNode):
         description="Adresin bulunduğu ülke, Türkiye için 'Türkiye' gibi değerler olabilir",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    ada: str | None = Field(
-        default=None, description="Adreste belirtilmişse kadastro ada bilgisini içerir"
-    )
-    parsel: str | None = Field(
-        default=None, description="Adreste belirtilmişse kadastro parsel bilgisini içerir"
-    )
+    ada: str | None = Field(default=None, description="Adreste belirtilmişse kadastro ada bilgisini içerir")
+    parsel: str | None = Field(default=None, description="Adreste belirtilmişse kadastro parsel bilgisini içerir")
     acik_adres: str | None = Field(default=None, description="Adresin tek satırda tam hâli")
 
 
@@ -122,19 +118,13 @@ class Insan(BaseNode):
         description="İnsanın pasaport numarası, pasaporta sahip herkes için geçerlidir. 9 haneli bir sayı olmalıdır",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    adres: Adres | None = Field(
-        default=None, description="İnsanın adresi, ikametgah adresi, yaşadığı yer"
-    )
+    adres: Adres | None = Field(default=None, description="İnsanın adresi, ikametgah adresi, yaşadığı yer")
     uyruk_bilgisi: str | None = Field(
         default=None,
         description="İnsanın uyruk bilgisi, vatandaşlık bilgisi. Türkiye Cumhuriyeti vatandaşı için 'T.C.' veya 'Türkiye' gibi değerler olabilir. Yabancilar için ise ülke adı veya uyruk bilgisi olabilir.",
     )
-    eposta: str | None = Field(
-        default=None, description="Elektronik posta adresi, iletişim için kullanılabilir"
-    )
-    telefon_no: str | None = Field(
-        default=None, description="telefon numarası, iletişim için kullanılabilir"
-    )
+    eposta: str | None = Field(default=None, description="Elektronik posta adresi, iletişim için kullanılabilir")
+    telefon_no: str | None = Field(default=None, description="telefon numarası, iletişim için kullanılabilir")
     kep_adresi: str | None = Field(
         default=None,
         description="KEP (Kayıtlı Elektronik Posta) adresi, resmi yazışmalar için kullanılabilir",
@@ -315,9 +305,7 @@ class Teminatlar(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    teminat_var: bool = Field(
-        default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz."
-    )
+    teminat_var: bool = Field(default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
 
 
 class Teminat(BaseNode):
@@ -362,9 +350,7 @@ class Ekler(BaseNode):
         how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    ek_var: bool = Field(
-        default=True, description="En az bir ek varsa True, yoksa zaten yaratilmaz."
-    )
+    ek_var: bool = Field(default=True, description="En az bir ek varsa True, yoksa zaten yaratilmaz.")
 
 
 class Ek(BaseNode):
@@ -375,9 +361,7 @@ class Ek(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=Ekler,
     )
-    ek_aciklama: str | None = Field(
-        default=None, description="sozlemede belirtilen ekin aciklamasi. "
-    )
+    ek_aciklama: str | None = Field(default=None, description="sozlemede belirtilen ekin aciklamasi. ")
 
 
 class FesihMaddeleri(BaseNode):
@@ -388,9 +372,7 @@ class FesihMaddeleri(BaseNode):
         how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    fesih_var: bool = Field(
-        default=True, description="En az bir fesih maddesi varsa True, yoksa zaten yaratilmaz."
-    )
+    fesih_var: bool = Field(default=True, description="En az bir fesih maddesi varsa True, yoksa zaten yaratilmaz.")
 
 
 class FesihMaddesi(BaseNode):
@@ -403,9 +385,7 @@ class FesihMaddesi(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=FesihMaddeleri,
     )
-    fesih_maddesi: str | None = Field(
-        default=None, description="Sozlesmede belirtilen fesih maddesi. "
-    )
+    fesih_maddesi: str | None = Field(default=None, description="Sozlesmede belirtilen fesih maddesi. ")
 
 
 class FaizMaddeleri(BaseNode):

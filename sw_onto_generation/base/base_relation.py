@@ -14,9 +14,7 @@ class BaseRelation(BaseModel):
     reason: str = Field(description="Bu relationi çıkarırken nasıl bir mantık kullandın")
 
     @classmethod
-    def append_field_description(
-        cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " "
-    ) -> None:
+    def append_field_description(cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " ") -> None:
         if field_name not in cls.model_fields:
             raise ValueError(f"Field {field_name} not found in model {cls.__name__}")
 
@@ -35,9 +33,7 @@ class BaseRelation(BaseModel):
             cls.model_fields[field_name].description = new_description
 
     @classmethod
-    def update_relation_config(
-        cls: type[BaseModel], new_relation_config: RelationModelConfig
-    ) -> None:
+    def update_relation_config(cls: type[BaseModel], new_relation_config: RelationModelConfig) -> None:
         if not hasattr(cls, "relation_config"):
             raise ValueError(f"Model {cls.__name__} has no relation_config")
 

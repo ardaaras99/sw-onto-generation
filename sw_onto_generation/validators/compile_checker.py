@@ -11,10 +11,7 @@ def find_python_files(directory: str = ".") -> list[Path]:
 
     for root, _, files in os.walk(directory):
         # Skip the venv directory, git directory, and other non-source directories
-        if any(
-            skip_dir in root
-            for skip_dir in [".venv", ".git", "__pycache__", ".mypy_cache", ".ruff_cache"]
-        ):
+        if any(skip_dir in root for skip_dir in [".venv", ".git", "__pycache__", ".mypy_cache", ".ruff_cache"]):
             continue
 
         for file in files:
