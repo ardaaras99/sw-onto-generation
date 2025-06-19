@@ -163,7 +163,7 @@ class Insan(BaseNode):
 class Sirket(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
-        description="Doküman içinde bulunan tüzel kişileri yani şirketler, kamu kuruluşları, dernekler, vakıflar veya organizasyonlari tanımlar. Bu şirketler, sözleşmeyi imzalayan veya sözleşmede adı geçen tüzel kişilerdir.",
+        description="Bir Insan Bir Şirketi Tanımlamaz, Bu çok önemli, lütfen dikkatli olun. Doküman içinde bulunan tüzel kişileri yani şirketler, kamu kuruluşları, dernekler, vakıflar veya organizasyonlari tanımlar. Bu şirketler, sözleşmeyi imzalayan veya sözleşmede adı geçen tüzel kişilerdir.",
         cardinality=True,
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
