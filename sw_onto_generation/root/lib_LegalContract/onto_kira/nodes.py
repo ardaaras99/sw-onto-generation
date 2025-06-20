@@ -3,7 +3,12 @@ from typing import ClassVar
 from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
-from sw_onto_generation.base.configs import NebulaIndexType, NodeFieldConfig, NodeModelConfig
+from sw_onto_generation.base.configs import (
+    HowToExtract,
+    NebulaIndexType,
+    NodeFieldConfig,
+    NodeModelConfig,
+)
 from sw_onto_generation.common.common_nodes import Adres
 
 
@@ -12,7 +17,7 @@ class KiraKonusuMulk(BaseNode):
         nodetag_index=False,
         description="Bu bir bina, ev, ofis, işyeri veya başka bir gayrimenkul olabilir. Kira sözleşmesinin konusu olan mülkü tanımlar. Kira konusu mülk, tip, buyukluk, adres ve diğer özellikleri içerebilir.",
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -33,7 +38,7 @@ class Depozito(BaseNode):
         nodetag_index=False,
         description="Kira konusu mulk icin istenilen depozito. Para, altin, doviz , teminat mektubu gibi seyler olabilir. kira sozlesmeleri icin ozel bir teminat turudur. Mutlaka miktar ve turu belirtilmelidir.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -57,12 +62,10 @@ class Demirbaslar(BaseNode):
         nodetag_index=False,
         description="Predefined",
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    demirbas_var: bool | None = Field(
-        default=None, description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?"
-    )
+    demirbas_var: bool = Field(default=True, description="Kiralan mulk icin sozlesmede demirbas belirtilmis mi ?")
 
 
 class Demirbas(BaseNode):
@@ -70,7 +73,7 @@ class Demirbas(BaseNode):
         nodetag_index=False,
         description="Sozlesmede demirbas olarak belirtilen esya, donanim, malzeme, mobilya, klima, mutfak esyasi, garaj esyasi etc. gibi seyler. kiracinin sadece kullanabilecegi ama mulkiyeti mulk sahibinde bulunan ve sozlesmede belirtilen esyalar.",
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=Demirbaslar,
     )
     demirbas_özellikleri: str | None = Field(
@@ -84,13 +87,11 @@ class KiraBedeli(BaseNode):
         nodetag_index=False,
         description="Kira sozlesmesinde belirlenen kira miktari. Bu miktar aylik veya yillik olarak belirtilmis olabilir. Kira bedeli, para birimi ile birlikte yazilmalidir. Ornegin 1000 TL, 500 USD gibi.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     kira_bedeli: float | None = Field(default=None, description="Kira bedeli miktari")
-    para_birimi: str | None = Field(
-        default=None, description="Kira bedelinin para birimi. Ornegin TL, USD, EUR gibi"
-    )
+    para_birimi: str | None = Field(default=None, description="Kira bedelinin para birimi. Ornegin TL, USD, EUR gibi")
     odeme_periyodu: str | None = Field(
         default=None,
         description="Kira bedelinin odeme periyodu. Ornegin Aylık, Yıllık gibi. Eger belirtilmemisse Aylık olarak alinir.",
@@ -110,12 +111,10 @@ class KiraAmaci(BaseNode):
         nodetag_index=False,
         description="Kiralanan seyin ne icin kullanilacagi. En cok karsilasilan mesken, ev, ofis, fabrika, depo, isyeri, lokanta, restoran gibi seyler olabilir. daha uzun aciklamalar da olabilir.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    kira_amaci: str | None = Field(
-        default=None, description="sozlesmedeki kiralanan seyin ne amacla kiralandigi"
-    )
+    kira_amaci: str | None = Field(default=None, description="sozlesmedeki kiralanan seyin ne amacla kiralandigi")
 
 
 class SimdikiDurum(BaseNode):
@@ -123,7 +122,7 @@ class SimdikiDurum(BaseNode):
         nodetag_index=False,
         description="Kiralanan seyin simdiki durumunu gosterir. Kiralanan seyin mevcut durumu, onarim gerektirip gerektirmedigi, kiralanan seyin kullanilabilirligi, kiralanan seyin bakim gerektirip gerektirmedigi gibi bilgileri icerir.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     simdiki_durum: str | None = Field(
@@ -137,7 +136,7 @@ class KiraArtisOrani(BaseNode):
         nodetag_index=False,
         description="Kira bedelinin artış oranı ile ilgili bilgileri tanımlar. Yıllık TÜFE, TEFE-TÜFE ortalaması, sabit bir yüzde veya farklı formüller içerebilir.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -164,7 +163,7 @@ class GiderSorumluluklari(BaseNode):
         nodetag_index=False,
         description="Kiralanan mülke ilişkin yan gider ve masrafların hangi tarafça karşılanacağını tanımlar. Elektrik, su, doğalgaz, aidat, vergi gibi kalemleri içerir.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -173,15 +172,9 @@ class GiderSorumluluklari(BaseNode):
         description="Elektrik giderinin hangi tarafça ödeneceği. 'Kiracı', 'Kiraya Veren' vb.",
     )
     su: str | None = Field(default=None, description="Su giderinin hangi tarafça ödeneceği.")
-    dogalgaz: str | None = Field(
-        default=None, description="Doğalgaz giderinin hangi tarafça ödeneceği."
-    )
-    aidat: str | None = Field(
-        default=None, description="Site/ apartman aidatının hangi tarafça ödeneceği."
-    )
-    emlak_vergisi: str | None = Field(
-        default=None, description="Emlak vergisi veya benzeri vergilerin hangi tarafça ödeneceği."
-    )
+    dogalgaz: str | None = Field(default=None, description="Doğalgaz giderinin hangi tarafça ödeneceği.")
+    aidat: str | None = Field(default=None, description="Site/ apartman aidatının hangi tarafça ödeneceği.")
+    emlak_vergisi: str | None = Field(default=None, description="Emlak vergisi veya benzeri vergilerin hangi tarafça ödeneceği.")
     diger_giderler: str | None = Field(
         default=None,
         description="Diğer gider kalemleri ve bunların sorumlulukları hakkında açıklama.",
@@ -193,7 +186,7 @@ class Sigorta(BaseNode):
         nodetag_index=False,
         description="Kiralanan mülkle ilgili sigorta yükümlülüklerini tanımlar. Konut sigortası, zorunlu deprem sigortası (DASK) vb. bilgileri içerir.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -205,12 +198,8 @@ class Sigorta(BaseNode):
         default=None,
         description="Sigorta teminat tutarı veya poliçe bedeli. Para birimi ile birlikte.",
     )
-    sigorta_saglayan: str | None = Field(
-        default=None, description="Sigorta şirketi veya poliçeyi düzenleyen taraf."
-    )
-    sigorta_suresi: str | None = Field(
-        default=None, description="Sigortanın geçerli olduğu süre veya poliçe bitiş tarihi."
-    )
+    sigorta_saglayan: str | None = Field(default=None, description="Sigorta şirketi veya poliçeyi düzenleyen taraf.")
+    sigorta_suresi: str | None = Field(default=None, description="Sigortanın geçerli olduğu süre veya poliçe bitiş tarihi.")
     sigorta_aciklama: str | None = Field(
         default=None,
         description="Sigorta ile ilgili ek açıklamalar, hangi tarafın masrafları üstleneceği vb.",

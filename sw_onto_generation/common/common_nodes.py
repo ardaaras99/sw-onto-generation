@@ -3,7 +3,12 @@ from typing import ClassVar
 from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
-from sw_onto_generation.base.configs import NebulaIndexType, NodeFieldConfig, NodeModelConfig
+from sw_onto_generation.base.configs import (
+    HowToExtract,
+    NebulaIndexType,
+    NodeFieldConfig,
+    NodeModelConfig,
+)
 
 
 class GeneralDocumentInfo(BaseNode):
@@ -11,7 +16,7 @@ class GeneralDocumentInfo(BaseNode):
         nodetag_index=False,
         description="Doküman hakkında genel bilgileri tanımlar, sözleşme ismi veya başlığı en önemli bilgidir. Her sözleşmede mutlaka bulunur.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     doküman_tipi: str = Field(
@@ -36,7 +41,7 @@ class Adres(BaseNode):
         nodetag_index=True,
         description="Adres bilgilerini tanımlar. Adres, cadde, sokak, mahalle, apartman, ilçe, il ve posta kodu gibi bilgileri içerebilir.",
         cardinality=True,
-        ask_llm=False,  # Used in Insan and Sirket nodes, LLM fills there. Keep false.
+        how_to_extract=HowToExtract.CASE_2,  # Used in Insan and Sirket nodes, LLM fills there. Keep false.
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -74,12 +79,8 @@ class Adres(BaseNode):
         description="Adresin bulunduğu ülke, Türkiye için 'Türkiye' gibi değerler olabilir",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    ada: str | None = Field(
-        default=None, description="Adreste belirtilmişse kadastro ada bilgisini içerir"
-    )
-    parsel: str | None = Field(
-        default=None, description="Adreste belirtilmişse kadastro parsel bilgisini içerir"
-    )
+    ada: str | None = Field(default=None, description="Adreste belirtilmişse kadastro ada bilgisini içerir")
+    parsel: str | None = Field(default=None, description="Adreste belirtilmişse kadastro parsel bilgisini içerir")
     acik_adres: str | None = Field(default=None, description="Adresin tek satırda tam hâli")
 
 
@@ -88,7 +89,7 @@ class Insan(BaseNode):
         nodetag_index=True,
         description="Doküman içinde bulunan gerçek kişileri yani insanları tanımlar. Bu insanlar, sözleşmeyi imzalayan veya sözleşmede adı geçen gerçek kişilerdir.",
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -117,19 +118,13 @@ class Insan(BaseNode):
         description="İnsanın pasaport numarası, pasaporta sahip herkes için geçerlidir. 9 haneli bir sayı olmalıdır",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    adres: Adres | None = Field(
-        default=None, description="İnsanın adresi, ikametgah adresi, yaşadığı yer"
-    )
+    adres: Adres | None = Field(default=None, description="İnsanın adresi, ikametgah adresi, yaşadığı yer")
     uyruk_bilgisi: str | None = Field(
         default=None,
         description="İnsanın uyruk bilgisi, vatandaşlık bilgisi. Türkiye Cumhuriyeti vatandaşı için 'T.C.' veya 'Türkiye' gibi değerler olabilir. Yabancilar için ise ülke adı veya uyruk bilgisi olabilir.",
     )
-    eposta: str | None = Field(
-        default=None, description="Elektronik posta adresi, iletişim için kullanılabilir"
-    )
-    telefon_no: str | None = Field(
-        default=None, description="telefon numarası, iletişim için kullanılabilir"
-    )
+    eposta: str | None = Field(default=None, description="Elektronik posta adresi, iletişim için kullanılabilir")
+    telefon_no: str | None = Field(default=None, description="telefon numarası, iletişim için kullanılabilir")
     kep_adresi: str | None = Field(
         default=None,
         description="KEP (Kayıtlı Elektronik Posta) adresi, resmi yazışmalar için kullanılabilir",
@@ -168,9 +163,9 @@ class Insan(BaseNode):
 class Sirket(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
-        description="Doküman içinde bulunan tüzel kişileri yani şirketler, kamu kuruluşları, dernekler, vakıflar veya organizasyonlari tanımlar. Bu şirketler, sözleşmeyi imzalayan veya sözleşmede adı geçen tüzel kişilerdir.",
+        description="Bir Insan Bir Şirketi Tanımlamaz, Bu çok önemli, lütfen dikkatli olun. Doküman içinde bulunan tüzel kişileri yani şirketler, kamu kuruluşları, dernekler, vakıflar veya organizasyonlari tanımlar. Bu şirketler, sözleşmeyi imzalayan veya sözleşmede adı geçen tüzel kişilerdir.",
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
@@ -211,7 +206,7 @@ class SozlesmeBaslangicTarihi(BaseNode):
         Belirlenebiliyorsa YYYY-MM-DD formatında doldurun. Eğer belirlenemiyorsa açıklama alanında sebebini veya belirsiz yapan cümleyi yazın.
         """,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     baslangic_tarihi: str | None = Field(
@@ -238,7 +233,7 @@ class SozlesmeBitisTarihi(BaseNode):
         Belirlenebiliyorsa YYYY-MM-DD formatında doldurun lütfen. Eğer belirlenemiyorsa None olarak tanımlayın ve açıklama alanında sebebini veya belirsiz yapan cümleyi yazın.
         """,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     bitis_tarihi: str | None = Field(
@@ -260,7 +255,7 @@ class SozlesmeYururluk(BaseNode):
             Yürürlükte olan sözleşmeler, başlangıç tarihi bugünden önceki bir tarih ve bitiş tarihi bugünden sonraki bir tarih olan sözleşmelerdir. Bu durumda sözleşme yürürlükte kabul edilir. Kesinlikle emin değilsiniz lütfen None olarak tanımlayın.
             """,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     sozlesme_yururluk: bool | None = Field(
@@ -278,7 +273,7 @@ class SozlesmeSure(BaseNode):
         Belirtilmemis de olabilir. Yil, ay veya gun seklinde belirtilmis olabilir.En buyuk zaman birimine gore belirtiniz lutfen. Ornek 1 yil 3 ay veya 3 ay 15 gun gibi.
         """,
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     sozlesme_suresi: str | None = Field(
@@ -293,7 +288,7 @@ class SozlesmeKonu(BaseNode):
         nodetag_index=True,
         description="Sozlesmenin konusunu belirler. Sozlesmenin amacini ve kapsamini belirler. Sozlesmenin ne ile ilgili oldugunu, hangi hizmetlerin veya urunlerin saglanacagini burada belirtilir. Ozellikle belirtilmemisse sozlesmenin 1-3 cumlelik ozeti ile tanimlanabilir.",
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     konu: str | None = Field(
@@ -307,12 +302,10 @@ class Teminatlar(BaseNode):
         nodetag_index=True,
         description="Predefined",
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    teminat_var: bool = Field(
-        default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz."
-    )
+    teminat_var: bool = Field(default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
 
 
 class Teminat(BaseNode):
@@ -320,7 +313,7 @@ class Teminat(BaseNode):
         nodetag_index=True,
         description="Sozlesmenin icerisnde her hangi bir konuda bir veya birden fazla teminat alinmis olabilir. Teminat tipleri olarak banka teminat mektubu, banka hesap blokesi, altin, doviz, para sayabiliriz.. Depozito olarak da teminat istenmis olabilir. her birini ayri bir node olarak tanimlayin.",
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=Teminatlar,
     )
     teminat_miktari: str | None = Field(
@@ -339,7 +332,7 @@ class UyusmazlikCozumYeri(BaseNode):
         nodetag_index=True,
         description="Herhangi bir uyusmazlik halinde taraflarin hangi mahkemeye veya arabulucuya basvuracagini belirler. Genellikle sozlesmenin sonunda belirtilir. 'Anlasmazliklarin Cozumu', 'Uyuşmazlık Çözüm Yeri', 'Uyuşmazlık Mahkemesi', 'Arabuluculuk Merkezi' gibi ifadelerle baslar.",
         cardinality=False,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
     uyusmazlik_cozum_yeri: str | None = Field(
@@ -349,34 +342,15 @@ class UyusmazlikCozumYeri(BaseNode):
     )
 
 
-# class Kefil(BaseNode):
-#     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-#         node_tag="Kefil",
-#         description="""
-#     Bu sozlesmeye kefil olan kisiyi veya sirketi tanimlar. Kefil, sozlesmenin yerine getirilmemesi durumunda sorumluluk alir.
-#     Kefil, Insan veya Sirket olabilir. Kefil, sözleşmenin tarafı değildir ancak sözleşmenin yerine getirilmemesi durumunda sorumluluk alır.
-#     kefil in turleri vardir. En onemlisi muteselsil kefildir. Muteselsil kefil, borcun tamamindan sorumludur ve borcun bir kismi icin kefil degildir.
-#     """,
-#         cardinality=True,
-#     )
-#     kefil: Insan | Sirket | None = Field(
-#         default=None,
-#         description="kefil olan sirketin veya da insanin adi veya unvani, VKN veya TCKN gibi kimlik bilgileri ile birlikte tanimlanabilir. Ornegin 'Ahmet Yılmaz', 'ABC Sirketi', '1234567890' gibi.",
-#     )
-#     kefil_turu: str | None = Field(default=None, description="Kefilin türü, örneğin 'Müteselsil Kefil', 'Sınırlı Kefil', 'Kefil' gibi.")
-
-
 class Ekler(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
         description="Predefined",
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    ek_var: bool = Field(
-        default=True, description="En az bir ek varsa True, yoksa zaten yaratilmaz."
-    )
+    ek_var: bool = Field(default=True, description="En az bir ek varsa True, yoksa zaten yaratilmaz.")
 
 
 class Ek(BaseNode):
@@ -384,12 +358,10 @@ class Ek(BaseNode):
         nodetag_index=True,
         description="Sozlesmenin icerisnde belirtilen ekler. Ekler, sözleşmenin ayrıntılarını veya ek belgelerini içerebilir. Ekler, sözleşmenin bir parçası olarak kabul edilir. Genelde 'ekler', 'sozlesmenin ekleri', 'ek-1', 'ek-2' gibi ifadelerle başlar. Ek ifadesinin mutlaka belirtilmis olmasi gerekir",
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=Ekler,
     )
-    ek_aciklama: str | None = Field(
-        default=None, description="sozlemede belirtilen ekin aciklamasi. "
-    )
+    ek_aciklama: str | None = Field(default=None, description="sozlemede belirtilen ekin aciklamasi. ")
 
 
 class FesihMaddeleri(BaseNode):
@@ -397,12 +369,10 @@ class FesihMaddeleri(BaseNode):
         nodetag_index=False,
         description="Predefined",
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    fesih_var: bool = Field(
-        default=True, description="En az bir fesih maddesi varsa True, yoksa zaten yaratilmaz."
-    )
+    fesih_var: bool = Field(default=True, description="En az bir fesih maddesi varsa True, yoksa zaten yaratilmaz.")
 
 
 class FesihMaddesi(BaseNode):
@@ -412,12 +382,10 @@ class FesihMaddesi(BaseNode):
         Sözleşmenin içinde herhangi bir fesih maddesi olup olmadığını belirler. En az bir fesih maddesi varsa true olur yoksa bu node yaratılmaz.
         """,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=FesihMaddeleri,
     )
-    fesih_maddesi: str | None = Field(
-        default=None, description="Sozlesmede belirtilen fesih maddesi. "
-    )
+    fesih_maddesi: str | None = Field(default=None, description="Sozlesmede belirtilen fesih maddesi. ")
 
 
 class FaizMaddeleri(BaseNode):
@@ -425,7 +393,7 @@ class FaizMaddeleri(BaseNode):
         nodetag_index=False,
         description="Predefined",
         cardinality=False,
-        ask_llm=False,
+        how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
     faiz_var: bool = Field(
@@ -441,7 +409,7 @@ class FaizMaddesi(BaseNode):
         Sozlesmede uygulanacak faiz veya temerrüt faizi ile ilgili maddeleri tanimlar. Her farkli faiz tipi veya orani icin ayri bir node olusturun.
         """,
         cardinality=True,
-        ask_llm=True,
+        how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=FaizMaddeleri,
     )
     faiz_orani: str = Field(

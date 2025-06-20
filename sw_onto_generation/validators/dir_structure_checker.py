@@ -95,9 +95,7 @@ class DIRManager:
                 # Check for unexpected items in ontology directory
                 for item in onto_items:
                     if item.name not in required_files:
-                        issues.append(
-                            f"Unexpected item '{item}' in ontology directory '{onto_path}'"
-                        )
+                        issues.append(f"Unexpected item '{item}' in ontology directory '{onto_path}'")
 
         if issues:
             rprint("[bold red]Validation issues found:[/bold red]")
