@@ -4,23 +4,20 @@ from sw_onto_generation.base.base_relation import BaseRelation
 from sw_onto_generation.base.configs import RelationModelConfig
 from sw_onto_generation.common.common_nodes import GeneralDocumentInfo, Insan, Sirket
 from sw_onto_generation.root.lib_LegalContract.onto_ihtiyac_kredisi.nodes import (
+    CaymaHakki,
     ErkenOdemeCezasi,
     FaizBilgisi,
     GeriOdemePlani,
-    Kefil,
-    Kefiller,
     KrediAmaci,
     KrediTutari,
     Masraf,
     Masraflar,
     SigortaBilgisi,
     TahsisUcreti,
+    TemerrutBilgisi,
+    TeminatBilgisi,
     VadeBilgisi,
 )
-
-# ---------------------------------------------------------------------------
-# Birincil İlişkiler – GeneralDocumentInfo çıkışlı
-# ---------------------------------------------------------------------------
 
 
 class HasKrediTutari(BaseRelation):
@@ -122,17 +119,6 @@ class HasMasraflar(BaseRelation):
     target_node: Masraflar
 
 
-class HasKefiller(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Kredi sözleşmesindeki kefil bilgilerini Kefiller düğümü ile ilişkilendirir.",
-        ask_llm=False,
-    )
-
-    source_node: GeneralDocumentInfo
-    target_node: Kefiller
-
-
 class HasKrediAlan(BaseRelation):
     """Krediyi kullanan borçlu (gerçek veya tüzel kişi)."""
 
@@ -173,9 +159,42 @@ class HasMasraf(BaseRelation):
 class HasKefil(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         edge_index=False,
-        description="Kefiller düğümünü tek tek Kefil öğeleriyle ilişkilendirir.",
+        description="Kredi sözleşmesinde kefil olup olmadığını gösterir.",
+        ask_llm=True,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Insan | Sirket
+
+
+class HasTemerrutBilgisi(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Ödeme gecikmesi (temerrüt) hâlinde uygulanacak hükümleri TemerrutBilgisi düğümü ile ilişkilendirir.",
         ask_llm=False,
     )
 
-    source_node: Kefiller
-    target_node: Kefil
+    source_node: GeneralDocumentInfo
+    target_node: TemerrutBilgisi
+
+
+class HasCaymaHakki(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kredi kullanımından cayma koşullarını CaymaHakki düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: CaymaHakki
+
+
+class HasTeminatBilgisi(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kredi sözleşmesindeki teminat bilgilerini TeminatBilgisi düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: TeminatBilgisi

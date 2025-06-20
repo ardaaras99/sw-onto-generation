@@ -4,7 +4,6 @@ from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
 from sw_onto_generation.base.configs import NebulaIndexType, NodeFieldConfig, NodeModelConfig
-from sw_onto_generation.common.common_nodes import Insan, Sirket
 
 
 class KrediTutari(BaseNode):
@@ -110,7 +109,7 @@ class ErkenOdemeCezasi(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     ceza_tutari: str | None = Field(
-        default=None, description="Erken ödeme cezası (örn. '%2', '350 TL')"
+        default=None, description="Erken ödeme cezası (örn. '%2', '350 TL'), yoksa None"
     )
     aciklama: str | None = Field(
         default=None, description="Cezayla ilgili ek açıklama veya şartlar"
@@ -154,31 +153,62 @@ class Masraf(BaseNode):
         ask_llm=True,
         nodeclass_to_be_created_automatically=Masraflar,
     )
-    masraf_adi: str = Field(description="Masrafın adı / türü")
+    masraf_adi: str = Field(description="Masrafın adı / türü, BSMV, KKDF, Ekspertiz vb.")
     masraf_tutari: str = Field(description="Masraf tutarı ve para birimi")
     aciklama: str | None = Field(default=None, description="Ek açıklama veya şart")
 
 
-class Kefiller(BaseNode):
+class TemerrutBilgisi(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
-        description="Kredi sözleşmesinde kefil olup olmadığını gösterir.",
+        description="Ödeme gecikmesi (temerrüt) halinde uygulanacak hükümleri tanımlar.",
         cardinality=False,
-        ask_llm=False,
-        nodeclass_to_be_created_automatically=None,
+        ask_llm=True,
     )
-    kefil_var: bool | None = Field(default=True, description="En az bir kefil varsa True")
+    temerrut_hali: str | None = Field(
+        default="Taksidin vadesinde ödenmemesi", description="Temerrüdün ne zaman doğacağı"
+    )
+    temerrut_faiz_orani: str | None = Field(
+        default=None, description="Akdi faiz + %30 sınırı içindeki gecikme faizi oranı"
+    )
+    bildirim_suresi_gun: int | None = Field(
+        default=30, description="Muacceliyet bildirimi için tanınan süre (gün)"
+    )
+    hukuki_sonuclar: str | None = Field(
+        default=None, description="İcra takibi, rehin paraya çevirme vb."
+    )
 
 
-class Kefil(BaseNode):
+class CaymaHakki(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
-        description="Kredi sözleşmesinde yer alan her bir kefili (gerçek veya tüzel) tanımlar.",
-        cardinality=True,
+        description="Kredi kullanımından cayma koşulları",
+        cardinality=False,
         ask_llm=True,
-        nodeclass_to_be_created_automatically=Kefiller,
     )
-    kefil: Insan | Sirket | None = Field(
-        default=None, description="Kefil olan kişi veya şirket bilgisi"
+    sure_gun: int = Field(14, description="Kanuni cayma süresi (gün)")
+    faiz_ve_vergiler_odenir_mi: bool = Field(
+        True, description="Cayarken akdi faiz + ödenmiş vergiler iade edilir mi?"
     )
-    kefil_turu: str | None = Field(default=None, description="Kefil türü (Müteselsil, Sınırlı vb.)")
+    iade_suresi_gun: int = Field(
+        30, description="Anapara + işleyen faizin bankaya iade edilme süresi"
+    )
+    ek_masraf_var_mi: bool = Field(
+        False, description="Kanun gereği ek tazminat / cezai şart doğar mı?"
+    )
+
+
+class TeminatBilgisi(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Rehin, ipotek veya kefalet gibi teminat bilgileri",
+        cardinality=True,  # Bir sözleşmede birden fazla teminat olabilir
+        ask_llm=True,
+    )
+    teminat_turu: str = Field(description="Taşıt Rehni | İpotek | Kefalet | Teminatsız")
+    teminat_detayi: str | None = Field(
+        default=None, description="Araç plakası, tapu bilgisi, kefil TCKN vb."
+    )
+    teminat_tutari: str | None = Field(
+        default=None, description="Teminat kapsamındaki azami tutar ve birim"
+    )
