@@ -8,6 +8,7 @@ class LegalContract(StrEnum):
     KIRA = "kira"
     IS = "iş"
     ABONELIK = "abonelik"
+    IHTIYAC_KREDISI = "ihtiyac_kredisi"
 
 
 class KullanımKlavuzu(StrEnum):
