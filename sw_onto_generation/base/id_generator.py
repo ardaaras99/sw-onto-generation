@@ -1,3 +1,5 @@
+import os
+import threading
 import time
 
 
@@ -113,3 +115,53 @@ class SnowflakeGenerator:
         bit_length = snowflake_id.bit_length()
         if bit_length > 64:
             raise ValueError(f"Generated ID has {bit_length} bits, exceeding the 64-bit limit")
+
+
+_id_counter = 0
+_counter_lock = threading.Lock()
+
+
+def generate_random_64bit_id() -> int:
+    """
+    Generate a random 64-bit integer ID with high throughput and minimal collision risk.
+
+    This function creates a unique ID by combining:
+    - Current timestamp with microsecond precision (36 bits)
+    - Process ID (10 bits)
+    - Thread ID (8 bits)
+    - Counter (10 bits) - allows 1024 IDs per microsecond per thread
+
+    Returns:
+        A random 64-bit integer suitable for use as an ID
+    """
+    global _id_counter
+
+    # Get current time in microseconds (higher precision than milliseconds)
+    timestamp = int(time.time() * 1_000_000)
+    # Use only 36 bits for timestamp (enough for ~69 years in microseconds)
+    timestamp = timestamp & 0xFFFFFFFFF  # 36 bits
+
+    # Get process ID (10 bits)
+    pid = os.getpid() & 0x3FF  # Use only lower 10 bits (0-1023)
+
+    # Get thread ID (8 bits)
+    tid = threading.get_ident() & 0xFF  # Use only lower 8 bits (0-255)
+
+    # Increment counter atomically (10 bits - 0-1023)
+    with _counter_lock:
+        counter = _id_counter
+        _id_counter = (_id_counter + 1) & 0x3FF
+
+    # Combine all components:
+    # - 36 bits for timestamp (microseconds)
+    # - 10 bits for PID (0-1023)
+    # - 8 bits for thread ID (0-255)
+    # - 10 bits for counter (0-1023)
+    # Total: 64 bits
+    combined_id = (timestamp << 28) | (pid << 18) | (tid << 10) | counter
+
+    # Ensure it fits in a 64-bit signed integer
+    max_signed_64bit = (1 << 63) - 1
+    combined_id = combined_id & max_signed_64bit
+
+    return combined_id

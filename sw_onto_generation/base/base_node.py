@@ -8,10 +8,7 @@ from sw_onto_generation.base.configs import (
     NodeFieldConfig,
     NodeModelConfig,
 )
-from sw_onto_generation.base.id_generator import SnowflakeGenerator
-
-# Global instance of the Snowflake generator
-_snowflake_generator = SnowflakeGenerator()
+from sw_onto_generation.base.id_generator import generate_random_64bit_id
 
 
 class BaseNode(BaseModel):
@@ -39,7 +36,7 @@ class BaseNode(BaseModel):
         """
         if isinstance(data, dict):
             # Always generate a new ID, regardless of whether one was provided
-            data["node_id"] = _snowflake_generator.generate_id()
+            data["node_id"] = generate_random_64bit_id()
         return data
 
     @classmethod
