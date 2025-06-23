@@ -3,12 +3,7 @@ from typing import ClassVar
 from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
-from sw_onto_generation.base.configs import (
-    HowToExtract,
-    NebulaIndexType,
-    NodeFieldConfig,
-    NodeModelConfig,
-)
+from sw_onto_generation.base.configs import HowToExtract, NebulaIndexType, NodeFieldConfig, NodeModelConfig
 
 
 class GeneralDocumentInfo(BaseNode):
@@ -158,6 +153,11 @@ class Insan(BaseNode):
         description="İnsanın bağlı olduğu vergi dairesi, örneğin 'Yeğenbey Vergi Dairesi",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
+    musteri_no: str | None = Field(
+        default=None,
+        description="İnsanın müşteri numarası, bankalarda veya diğer kurumlarda kullanılan müşteri numarası",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
 
 
 class Sirket(BaseNode):
@@ -195,6 +195,51 @@ class Sirket(BaseNode):
     role: str = Field(
         default="Taraf",
         description="İnsanın sözleşmedeki rolü, örneğin 'Kiracı', 'Kiraya Veren', 'Vekil', 'İşveren', 'İşçi' gibi. Spesifik bir rol belirtilmemişse Taraf olarak da tanımlanabilir.",
+    )
+    musteri_no: str | None = Field(
+        default=None,
+        description="Şirketin müşteri numarası, bankalarda veya diğer kurumlarda kullanılan müşteri numarası",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    merkez_adresi: str | None = Field(
+        default=None,
+        description="Şirket merkez adresi (örn. Allianz Tower Küçükbakkalköy Mah. Kayışdağı Cad. No:1 Ataşehir/İstanbul)",
+    )
+    kayitli_sermaye: str | None = Field(
+        default=None,
+        description="Kayıtlı sermaye tutarı (örn. 500 Milyon TL)",
+    )
+    cikarilmis_sermaye: str | None = Field(
+        default=None,
+        description="Çıkarılmış sermaye tutarı (örn. 306 Milyon TL)",
+    )
+    sirket_kurucusu: str | None = Field(
+        default=None,
+        description="Şirketin kurucusu",
+    )
+    buyuk_mukellefler_vd: str | None = Field(
+        default=None,
+        description="Büyük Mükellefler Vergi Dairesi numarası",
+    )
+    mersis_no: str | None = Field(
+        default=None,
+        description="Mersis numarası",
+    )
+    hizmet_merkezi_tel: str | None = Field(
+        default=None,
+        description="Hizmet merkezi telefon numarası",
+    )
+    website: str | None = Field(
+        default=None,
+        description="Şirket web sitesi (örn. www.cybersoft.com.tr)",
+    )
+    levha_no: str | None = Field(
+        default=None,
+        description="Şirket levha numarası",
+    )
+    ticaret_sicil_no: str | None = Field(
+        default=None,
+        description="Ticaret sicil numarası",
     )
 
 
@@ -294,36 +339,6 @@ class SozlesmeKonu(BaseNode):
     konu: str | None = Field(
         default=None,
         description="Sozlesmenin konusunu belirler. Sozlesmenin amacini ve kapsamini belirler. Sozlesmenin ne ile ilgili oldugunu, hangi hizmetlerin veya urunlerin saglanacagini burada belirtilir. Ozellikle belirtilmemisse sozlesmenin 1-3 cumlelik ozeti ile tanimlanabilir.",
-    )
-
-
-class Teminatlar(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        nodetag_index=True,
-        description="Predefined",
-        cardinality=False,
-        how_to_extract=HowToExtract.CASE_1,
-        nodeclass_to_be_created_automatically=None,
-    )
-    teminat_var: bool = Field(default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
-
-
-class Teminat(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        nodetag_index=True,
-        description="Sozlesmenin icerisnde her hangi bir konuda bir veya birden fazla teminat alinmis olabilir. Teminat tipleri olarak banka teminat mektubu, banka hesap blokesi, altin, doviz, para sayabiliriz.. Depozito olarak da teminat istenmis olabilir. her birini ayri bir node olarak tanimlayin.",
-        cardinality=True,
-        how_to_extract=HowToExtract.CASE_0,
-        nodeclass_to_be_created_automatically=Teminatlar,
-    )
-    teminat_miktari: str | None = Field(
-        default=None,
-        description="Sozlesmede belirtilen herhangi bir teminatin miktari. Teminat miktari, para birimi ile birlikte belirtilmelidir. Ornegin '1000 TL', '500 USD', '2000 EUR' gibi.",
-        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
-    )
-    teminat_tipi: str | None = Field(
-        default=None,
-        description="Teminatin tipi belirtilmelidir. Ornegin 'Banka Teminat Mektubu', 'Banka Hesap Blokesi', 'Altin', 'Doviz', 'Para' gibi. Teminat tipi, teminatin ne sekilde saglandigini belirtir.",
     )
 
 
