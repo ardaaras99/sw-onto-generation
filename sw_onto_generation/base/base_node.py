@@ -1,6 +1,10 @@
-from typing import Any, ClassVar
+from hashlib import sha256
+from typing import ClassVar
 
 from pydantic import BaseModel, Field, model_validator
+
+# from sw_onto_generation.base.id_generator import generate_random_64bit_id
+from typing_extensions import Self
 
 from sw_onto_generation.base.configs import (
     HowToExtract,
@@ -8,7 +12,6 @@ from sw_onto_generation.base.configs import (
     NodeFieldConfig,
     NodeModelConfig,
 )
-from sw_onto_generation.base.id_generator import generate_random_64bit_id
 
 
 class BaseNode(BaseModel):
@@ -26,18 +29,18 @@ class BaseNode(BaseModel):
     )
 
     # Define node_id with default=None, but we'll always overwrite it
-    node_id: int = Field(default=None)
+    node_id: str = Field(default=None)
 
-    @model_validator(mode="before")
-    @classmethod
-    def generate_node_id(cls, data: Any) -> Any:
-        """
-        Always generate a new node_id, ignoring any provided value.
-        """
-        if isinstance(data, dict):
-            # Always generate a new ID, regardless of whether one was provided
-            data["node_id"] = generate_random_64bit_id()
-        return data
+    @model_validator(mode="after")
+    def generate_node_id(self) -> Self:
+        import json
+
+        model_dict = self.model_dump()
+        model_dict.pop("node_id")
+
+        sha256_hash = sha256(json.dumps(model_dict).encode()).hexdigest()
+        self.node_id = sha256_hash
+        return self
 
     @classmethod
     def append_field_description(cls: type[BaseModel], field_name: str, additional_description: str, seperator: str = " ") -> None:
