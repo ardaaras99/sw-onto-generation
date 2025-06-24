@@ -157,8 +157,10 @@ class HasMasraf(BaseRelation):
 
 
 class HasKefil(BaseRelation):
+    """Kredi sözleşmesinde kefil olup olmadığını gösterir."""
+
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
+        edge_index=True,
         description="Kredi sözleşmesinde kefil olup olmadığını gösterir.",
         ask_llm=True,
     )
@@ -198,3 +200,30 @@ class HasTeminatBilgisi(BaseRelation):
 
     source_node: GeneralDocumentInfo
     target_node: TeminatBilgisi
+
+
+# Supporting relations for additional information
+class KrediAlanBilgileri(BaseRelation):
+    """Connects loan recipient to additional personal info if needed."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kredi alan ile ek kişisel bilgilerini ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: Insan | Sirket
+    target_node: GeneralDocumentInfo
+
+
+class TeminatSahibi(BaseRelation):
+    """Relates collateral to its owner."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
+        description="Teminatın sahibini belirler. Teminat ile sahip kişi/kuruluş arasındaki ilişkiyi tanımlar.",
+        ask_llm=True,
+    )
+
+    source_node: TeminatBilgisi
+    target_node: Insan | Sirket
