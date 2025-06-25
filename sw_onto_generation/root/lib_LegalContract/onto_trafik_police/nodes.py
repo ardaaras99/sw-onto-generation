@@ -41,6 +41,16 @@ class TrafikPolice(BaseNode):
         description="Toplam sayfa sayısı",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
+    cografi_siniri: str | None = Field(
+        default=None,
+        description="Coğrafi sınırları belirtir.",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    hasarsızlık_basamak: str | None = Field(
+        default=None,
+        description="Hasarsızlık basamaklarını belirtir. Örnek: 1. Basamak, 2. Basamak, 3. Basamak",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
 
 
 class Acente(Sirket):
@@ -151,7 +161,7 @@ class Arac(BaseNode):
     )
     sbm_bimref_no: str | None = Field(
         default=None,
-        description="SBM BimRefNo",
+        description="SBM BimRefNo, Sig Bilgi İşlem Merkezi Referans Numarası",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
     sbm_tramer_no: str | None = Field(
@@ -164,6 +174,11 @@ class Arac(BaseNode):
         description="Trafik çıkış tarihi, YYYY-MM-DD formatında",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
+    yakit_tipi: str | None = Field(
+        default=None,
+        description="Araç yakıt tipi (örn. Benzin, Dizel, Elektrik, vb.)",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
 
 
 class Teminatlar(BaseNode):
@@ -174,13 +189,13 @@ class Teminatlar(BaseNode):
         how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    teminat_var: bool = Field(default=False, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
+    teminat_var: bool = Field(default=True, description="En az bir teminat varsa True, yoksa zaten yaratilmaz.")
 
 
 class Teminat(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=True,
-        description="Sozlesmenin icerisnde her hangi bir konuda bir veya birden fazla teminat alinmis olabilir. Teminat tipleri olarak banka teminat mektubu, banka hesap blokesi, altin, doviz, para sayabiliriz.. Depozito olarak da teminat istenmis olabilir. her birini ayri bir node olarak tanimlayin.",
+        description="Sozlesmenin icerisnde herhangi bir konuda bir veya birden fazla teminat alinmis olabilir. Kişi, kaza, olay ve yillik teminatlar olabilir.",
         cardinality=True,
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=Teminatlar,
@@ -288,30 +303,125 @@ class Indirimler(BaseNode):
         how_to_extract=HowToExtract.CASE_1,
         nodeclass_to_be_created_automatically=None,
     )
-    indirim_var: bool = Field(default=False, description="En az bir indirim varsa True, yoksa zaten yaratilmaz.")
+    indirim_var: bool = Field(default=True, description="En az bir indirim varsa True, yoksa zaten yaratilmaz.")
 
 
 class Indirim(BaseNode):
-    """Discount and surcharge node."""
+    """Discount node."""
 
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
-        description="Sigorta priminde uygulanan indirim ve artışları tanımlar. Hasarsızlık indirimi, yaş artışı vb.",
+        description="Sigorta priminde uygulanan indirimleri tanımlar. Hasarsızlık indirimi, meslek indirimi vb.",
         cardinality=True,
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
-    indirim_artis_turu: str = Field(description="İndirim/artış türü (HASARSIZLIK İNDİRİMİ, DEPREM ARTIRIMI, Yaş, Tecrübe, vb.)")
+    indirim_turu: str = Field(description="İndirim türü (HASARSIZLIK İNDİRİMİ, vb.)")
     oran: str | None = Field(
         default=None,
-        description="İndirim/artış oranı (örn. %65, %3, 50)",
+        description="İndirim oranı (örn. %65, %3, 50)",
     )
     tutar: str | None = Field(
         default=None,
-        description="İndirim/artış tutarı ve para birimi",
+        description="İndirim tutarı ve para birimi",
     )
     aciklama: str | None = Field(
         default=None,
-        description="İndirim/artış açıklaması",
+        description="İndirim açıklaması",
+    )
+
+
+class Artirimlar(BaseNode):
+    """Artırımlar node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    artirim_var: bool = Field(default=True, description="En az bir artırım varsa True, yoksa zaten yaratilmaz.")
+
+
+class Artirim(BaseNode):
+    """Artırım node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Sigorta priminde uygulanan artırımları tanımlar. Deprem artırımı vb.",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=None,
+    )
+
+    artirim_turu: str = Field(description="Artırım türü (DEPREM ARTIRIMI, vb.)")
+    oran: str | None = Field(
+        default=None,
+        description="Artırım oranı (örn. %65, %3, 50)",
+    )
+    aciklama: str | None = Field(
+        default=None,
+        description="Artırım açıklaması",
+    )
+
+
+class Istisnalar(BaseNode):
+    """Istisnalar node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    istisna_var: bool = Field(default=True, description="En az bir istisna varsa True, yoksa zaten yaratilmaz.")
+
+
+class Istisna(BaseNode):
+    """Istisna node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Sigorta poliçesinde uygulanan istisnaları tanımlar. Bu istisnalar primi azaltabilir, teminat kapsamını sınırlayabilir. Alkollü araba kullanımı, sürücü belgesiz araç kullanımı vb.",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=None,
+    )
+    istisna_turu: str = Field(description="Istisna türü (ALKOLLU ARABA KULLANIMI, vb.)")
+    açıklama: str | None = Field(
+        default=None,
+        description="Istisna açıklaması",
+    )
+
+
+class EkKlozlar(BaseNode):
+    """Ek klozlar node. Bu klozlar poliçe için ek koşulları belirtir."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    ek_kloz_var: bool = Field(default=True, description="En az bir ek kloz varsa True, yoksa zaten yaratilmaz.")
+
+
+class EkKloz(BaseNode):
+    """Ek kloz node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Ek klozlar node. Bu klozlar poliçe için ek koşulları belirtir. ",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=None,
+    )
+    ek_kloz_adi: str = Field(description="Ek kloz adı")
+    ek_kloz_aciklama: str | None = Field(
+        default=None,
+        description="Ek kloz açıklaması. Bu açıklamalar poliçe için ek koşulları belirtir.",
     )

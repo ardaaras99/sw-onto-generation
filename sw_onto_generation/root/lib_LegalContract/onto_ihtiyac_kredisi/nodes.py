@@ -119,7 +119,7 @@ class ErkenOdemeCezasi(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    ceza_tutari: str | None = Field(default=None, description="Erken ödeme cezası (örn. '%2', '350 TL'), yoksa None")
+    ceza_tutari: str | None = Field(default=None, description="Erken ödeme cezası (örn. '%2', '350 TL')")
     aciklama: str | None = Field(default=None, description="Cezayla ilgili ek açıklama veya şartlar")
 
 
@@ -197,7 +197,7 @@ class TeminatBilgisi(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
         description="Rehin, ipotek veya kefalet gibi teminat bilgileri",
-        cardinality=True,  # Bir sözleşmede birden fazla teminat olabilir
+        cardinality=True,
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )

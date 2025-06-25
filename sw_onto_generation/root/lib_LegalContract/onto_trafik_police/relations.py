@@ -6,6 +6,12 @@ from sw_onto_generation.common.common_nodes import GeneralDocumentInfo, Insan, S
 from sw_onto_generation.root.lib_LegalContract.onto_trafik_police.nodes import (
     Acente,
     Arac,
+    Artirim,
+    Artirimlar,
+    EkKloz,
+    EkKlozlar,
+    Istisna,
+    Istisnalar,
     SigortaPrimi,
     Teminat,
     Teminatlar,
@@ -180,3 +186,76 @@ class HasAracSahibi(BaseRelation):
 
     source_node: Insan | Sirket
     target_node: Arac
+
+
+class HasArtirimlar(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sigorta priminde uygulanan artırımları ilişkilendirir. Artirimlar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: Artirimlar
+
+
+class HasArtirim(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sigorta priminde uygulanan artırımları ilişkilendirir. Artirim node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: Artirimlar
+    target_node: Artirim
+
+
+class HasIstisnalar(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sigorta priminde uygulanan istisnaları ilişkilendirir. Istisnalar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: Istisnalar
+
+
+class HasIstisna(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sigorta priminde uygulanan istisnaları ilişkilendirir. Istisna node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: Istisnalar
+    target_node: Istisna
+
+
+class HasEkKlozlar(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sigorta poliçesinde uygulanan ek klozları ilişkilendirir. EkKlozlar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: EkKlozlar
+
+
+class HasEkKloz(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sigorta poliçesinde uygulanan ek klozları ilişkilendirir. EkKloz node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: EkKlozlar
+    target_node: EkKloz
