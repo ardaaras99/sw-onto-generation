@@ -8,7 +8,6 @@ from sw_onto_generation.common.common_nodes import GeneralDocumentInfo, Insan, S
 from sw_onto_generation.root.lib_LegalContract.onto_abonelik.nodes import (
     AbonelikBedeli,
     AbonelikHizmeti,
-    AbonelikNumarasi,
     BildirimBilgisi,
     CaymaBedeli,
     Ekipman,
@@ -117,17 +116,6 @@ class HasHizmetSeviyesi(BaseRelation):
 
     source_node: GeneralDocumentInfo
     target_node: HizmetSeviyesi
-
-
-class HasAbonelikNumarasi(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Abonelik / müşteri numarasını AbonelikNumarasi düğümü ile ilişkilendirir.",
-        ask_llm=False,
-    )
-
-    source_node: GeneralDocumentInfo
-    target_node: AbonelikNumarasi
 
 
 class HasFaturaBilgisi(BaseRelation):

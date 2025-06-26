@@ -12,7 +12,8 @@ from sw_onto_generation.root.lib_LegalContract.onto_ihtiyac_kredisi.nodes import
     KrediTutari,
     Masraf,
     Masraflar,
-    SigortaBilgisi,
+    Sigorta,
+    Sigortalar,
     TahsisUcreti,
     TemerrutBilgisi,
     TeminatBilgisi,
@@ -97,15 +98,26 @@ class HasErkenOdemeCezasi(BaseRelation):
     target_node: ErkenOdemeCezasi
 
 
-class HasSigortaBilgisi(BaseRelation):
+class HasSigortalar(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         edge_index=False,
-        description="Kredi kapsamında yapılan sigorta bilgilerini SigortaBilgisi düğümü ile ilişkilendirir.",
+        description="Kredi kapsamında yapılan sigorta bilgilerini Sigortalar düğümü ile ilişkilendirir.",
         ask_llm=False,
     )
 
     source_node: GeneralDocumentInfo
-    target_node: SigortaBilgisi
+    target_node: Sigortalar
+
+
+class HasSigorta(BaseRelation):
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kredi kapsamında yapılan sigorta bilgilerini Sigorta düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: Sigortalar
+    target_node: Sigorta
 
 
 class HasMasraflar(BaseRelation):

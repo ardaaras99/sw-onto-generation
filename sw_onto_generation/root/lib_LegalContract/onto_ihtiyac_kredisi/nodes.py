@@ -123,13 +123,24 @@ class ErkenOdemeCezasi(BaseNode):
     aciklama: str | None = Field(default=None, description="Cezayla ilgili ek açıklama veya şartlar")
 
 
-class SigortaBilgisi(BaseNode):
+class Sigortalar(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Predefined",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    sigorta_var: bool | None = Field(default=True, description="En az bir sigorta varsa True")
+
+
+class Sigorta(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
         description="Kredi kapsamında yaptırılan hayat, işsizlik veya ferdi kaza sigortası detaylarını tanımlar.",
-        cardinality=False,
+        cardinality=True,
         how_to_extract=HowToExtract.CASE_0,
-        nodeclass_to_be_created_automatically=None,
+        nodeclass_to_be_created_automatically=Sigortalar,
     )
     sigorta_tipi: str | None = Field(
         default=None,

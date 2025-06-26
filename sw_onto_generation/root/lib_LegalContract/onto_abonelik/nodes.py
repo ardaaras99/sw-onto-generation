@@ -34,6 +34,10 @@ class AbonelikHizmeti(BaseNode):
         default=None,
         description="Hizmetin sağlandığı adres (sabit hizmetler için). Mobil hizmetlerde boş bırakılabilir.",
     )
+    abonelik_no: str = Field(
+        description="Abone / müşteri numarası",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
 
 
 class AbonelikBedeli(BaseNode):
@@ -44,11 +48,12 @@ class AbonelikBedeli(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    abonelik_bedeli: float = Field(description="Ücret miktarı (sayı)")
+    abonelik_bedeli: float = Field(description="Toplam vergiler dahil ücret miktarı (sayı)")
     para_birimi: str = Field(default="TL", description="Para birimi (TL, USD, EUR vb.)")
     odeme_periyodu: str = Field(default="Aylık", description="Ödeme periyodu (Aylık, Yıllık vb.)")
     odeme_yontemi: str | None = Field(default=None, description="Ödeme yöntemi (otomatik ödeme, kredi kartı, havale vb.)")
     indirim_aciklamasi: str | None = Field(default=None, description="Kampanya / indirim varsa açıklaması")
+    taahhut_var_mi: bool | None = Field(default=None, description="Taahhüt var mı?")
 
 
 class KurulumBedeli(BaseNode):
@@ -72,6 +77,7 @@ class CaymaBedeli(BaseNode):
         nodeclass_to_be_created_automatically=None,
     )
     cayma_bedeli: str = Field(description="Cayma bedeli miktarı ve para birimi")
+    bedelin_hesaplama_yontemi: str | None = Field(default=None, description="Cayma bedelinin hesaplanma yöntemi")
 
 
 class Ekipmanlar(BaseNode):
@@ -96,11 +102,12 @@ class Ekipman(BaseNode):
     ekipman_adi: str = Field(description="Cihaz adı / modeli (örn. 'ZXHN H298A Modem')")
     seri_no: str | None = Field(default=None, description="Seri numarası veya IMEI vb.")
     depozito: str | None = Field(default=None, description="Cihaz için alınan depozito / teminat (örn. '300 TL')")
+    aciklama: str | None = Field(default=None, description="Cihaz ile ilgili ek açıklama")
 
 
 class HizmetSeviyesi(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="""Hız, kota, kesintisiz hizmet garantisi gibi SLA / QoS parametrelerini tanımlar.""",
+        description="""Hız, kota, kesintisiz hizmet garantisi gibi parametreleri tanımlar.""",
         nodetag_index=False,
         cardinality=False,
         how_to_extract=HowToExtract.CASE_0,
@@ -109,21 +116,6 @@ class HizmetSeviyesi(BaseNode):
     hiz: str | None = Field(default=None, description="İnternet hızı (örn. '100 Mbps')")
     kota: str | None = Field(default=None, description="Aylık veri kotası / kWh vb.")
     kesinti_tazminati: str | None = Field(default=None, description="Hizmet kesintisi halinde uygulanacak tazminat")
-
-
-class AbonelikNumarasi(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="""Hizmet sağlayıcı tarafından verilen abone / müşteri numarasını tanımlar.""",
-        nodetag_index=False,
-        cardinality=True,
-        how_to_extract=HowToExtract.CASE_0,
-        nodeclass_to_be_created_automatically=None,
-    )
-    abonelik_no: str = Field(
-        description="Abone / müşteri numarası",
-        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
-    )
-    aciklama: str | None = Field(default=None, description="Numaranın geçtiği yer / ek açıklama")
 
 
 class FaturaBilgisi(BaseNode):
@@ -137,7 +129,6 @@ class FaturaBilgisi(BaseNode):
     fatura_kesim_tarihi: str | None = Field(default=None, description="Fatura kesim günü / tarihi")
     fatura_periyodu: str | None = Field(default="Aylık", description="Fatura periyodu (Aylık, 3-Aylık vb.)")
     fatura_adresi: Adres | None = Field(default=None, description="Faturaların gönderileceği adres")
-    e_fatura: bool | None = Field(default=None, description="E-fatura kullanılıyorsa True")
 
 
 class TaksitSecenegi(BaseNode):
