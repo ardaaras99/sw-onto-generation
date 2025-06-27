@@ -11,8 +11,6 @@ from sw_onto_generation.root.lib_LegalContract.onto_kasko_police.nodes import (
     EkHizmetler,
     EkKloz,
     EkKlozlar,
-    Istisna,
-    Istisnalar,
     KaskoPolice,
     SigortaPrimi,
     Teminat,
@@ -212,30 +210,6 @@ class HasArtirim(BaseRelation):
 
     source_node: Artirimlar
     target_node: Artirim
-
-
-class HasIstisnalar(BaseRelation):
-    """Relates contract to insurance premium."""
-
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Kasko priminde uygulanan istisnaları ilişkilendirir. Istisnalar node'u ile bağlantı sağlar.",
-        ask_llm=False,
-    )
-    source_node: GeneralDocumentInfo
-    target_node: Istisnalar
-
-
-class HasIstisna(BaseRelation):
-    """Relates contract to insurance premium."""
-
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Kasko priminde uygulanan istisnaları ilişkilendirir. Istisna node'u ile bağlantı sağlar.",
-        ask_llm=False,
-    )
-    source_node: Istisnalar
-    target_node: Istisna
 
 
 class HasEkKlozlar(BaseRelation):

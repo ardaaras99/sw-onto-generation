@@ -439,3 +439,33 @@ class FaizMaddesi(BaseNode):
         default=None,
         description="Faizin nasil hesaplanacagini veya hangi kosullarda uygulanacagini aciklayan cumle veya madde metni.",
     )
+
+
+class Istisnalar(BaseNode):
+    """Istisnalar node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    istisna_var: bool = Field(default=True, description="En az bir istisna varsa True, yoksa zaten yaratilmaz.")
+
+
+class Istisna(BaseNode):
+    """Istisna node."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Sigorta poliçesinde uygulanan istisnaları tanımlar. Bu istisnalar primi azaltabilir, teminat kapsamını sınırlayabilir. Alkollü araba kullanımı, sürücü belgesiz araç kullanımı vb.",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=None,
+    )
+    istisna_turu: str = Field(description="Istisna türü (ALKOLLU ARABA KULLANIMI, vb.)")
+    açıklama: str | None = Field(
+        default=None,
+        description="Istisna açıklaması",
+    )
