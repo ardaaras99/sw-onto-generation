@@ -17,8 +17,6 @@ from sw_onto_generation.common.common_nodes import (
     SozlesmeKonu,
     SozlesmeSure,
     SozlesmeYururluk,
-    Teminat,
-    Teminatlar,
     UyusmazlikCozumYeri,
 )
 
@@ -73,26 +71,6 @@ class HasSozlesmeSuresi(BaseRelation):
     )
     source_node: GeneralDocumentInfo
     target_node: SozlesmeSure
-
-
-class HasTeminatlar(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Sozlesmede teminat belirtilip belitilmedigini belirler. Bir tane teminat olursa bu iliski kurulur. Teminatlar node'u ile iliskilendirir.",
-        ask_llm=False,
-    )
-    source_node: GeneralDocumentInfo
-    target_node: Teminatlar
-
-
-class HasTeminat(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Sozlesmede teminat belirtilmise bunlari HasTeminatlar node'u ile iliskilendirir.",
-        ask_llm=False,
-    )
-    source_node: Teminatlar
-    target_node: Teminat
 
 
 class HasSozlesmeUyusmazlikCozumYeri(BaseRelation):

@@ -7,6 +7,9 @@ from enum import StrEnum
 class LegalContract(StrEnum):
     KIRA = "kira"
     ABONELIK = "abonelik"
+    IHTIYAC_KREDISI = "ihtiyac_kredisi"
+    TRAFIK_POLICE = "trafik_police"
+    KASKO_POLICE = "kasko_police"
 
 
 ENUM_CLASSES = [cls for name, cls in inspect.getmembers(sys.modules[__name__]) if inspect.isclass(cls) and issubclass(cls, StrEnum) and cls is not StrEnum]

@@ -3,37 +3,167 @@ from typing import ClassVar
 from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
-from sw_onto_generation.base.configs import (
-    HowToExtract,
-    NebulaIndexType,
-    NodeFieldConfig,
-    NodeModelConfig,
-)
+from sw_onto_generation.base.configs import HowToExtract, NebulaIndexType, NodeFieldConfig, NodeModelConfig
 from sw_onto_generation.common.common_nodes import Adres
 
 
-class AbonelikHizmeti(BaseNode):
-    """Aboneliğin konusunu – hangi hizmetin sağlandığını – tanımlar."""
+class Taahhutname(BaseNode):
+    """Taahhütname (commitment document) ana bilgilerini tanımlar."""
 
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
         nodetag_index=False,
-        description="""Bu bir internet, telefon, elektrik, su, dijital içerik vb. hizmet olabilir.
-        Tarife / paket adı, hizmet hızı, kota veya kanal sayısı gibi bilgiler içerebilir.""",
+        description="Taahhütname belgesi temel bilgilerini içerir. Taahhüt süresi, aktivasyon tarihi ve referans edilen sözleşmeler dahil.",
         cardinality=False,
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
 
-    hizmet_turu: str = Field(
-        description="Hizmet türü (internet, mobil, elektrik vb.)",
+    taahhut_suresi: str | None = Field(
+        default=None,
+        description="Taahhüt süresi (örn. '12 ay', '24 ay')",
         config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
-    tarife_adi: str | None = Field(default=None, description="Tarife veya paket adı (Örn. 'Fiber 100 Mbps')")
-    hizmet_aciklamasi: str | None = Field(default=None, description="Hizmetin detaylı açıklaması / kapsamı")
-    hizmet_adresi: Adres | None = Field(
+    aktivasyon_tarihi: str | None = Field(
         default=None,
-        description="Hizmetin sağlandığı adres (sabit hizmetler için). Mobil hizmetlerde boş bırakılabilir.",
+        description="Hizmet aktivasyon tarihi - fatura başlangıç tarihi, YYYY-MM-DD formatında",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
     )
+    taahhutname_imza_tarihi: str | None = Field(
+        default=None,
+        description="Taahhütname imza tarihi, YYYY-MM-DD formatında",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    taahhutname_no: str | None = Field(
+        default=None,
+        description="Taahhütname referans numarası",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    genel_aciklama: str | None = Field(default=None, description="Taahhütname genel açıklaması ve koşulları")
+
+
+class EkSozlesmeler(BaseNode):
+    """Taahhütname ile ilişkili ek sözleşmelerin varlığını belirtir."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined node - Taahhütname ile ilişkili ek sözleşmeler var mı?",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    ek_sozlesme_var: bool = Field(default=True, description="En az bir ek sözleşme varsa True")
+
+
+class EkSozlesme(BaseNode):
+    """Taahhütname ile ilişkili her bir ek sözleşmeyi tanımlar."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Taahhütname kapsamında referans edilen her bir ek sözleşme bilgisi",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=EkSozlesmeler,
+    )
+
+    sozlesme_adi: str = Field(description="Ek sözleşme adı (örn. 'DBS Ofis Güvenlik Duvarı Hizmetine İlişkin Ek Sözleşme')")
+    sozlesme_tarihi: str | None = Field(
+        default=None,
+        description="Ek sözleşmenin imzalandığı tarih, YYYY-MM-DD formatında",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    sozlesme_aciklamasi: str | None = Field(default=None, description="Ek sözleşme kapsamı ve açıklaması")
+
+
+class TaahhutKapsamiHizmetler(BaseNode):
+    """Taahhüt kapsamında sunulan hizmetlerin varlığını belirtir."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined node - Taahhüt kapsamında hizmetler var mı?",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    hizmet_var: bool = Field(default=True, description="En az bir hizmet varsa True")
+
+
+class TaahhutKapsamiHizmet(BaseNode):
+    """Taahhüt kapsamında sunulan her bir hizmeti tanımlar."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Taahhüt kapsamında sunulan her bir hizmet (DBS, MPLS VPN, veri merkezi hizmetleri vb.)",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=TaahhutKapsamiHizmetler,
+    )
+
+    hizmet_adi: str = Field(description="Hizmet adı (örn. '4000 GB SAS', 'Fortigate VM01 UTM aylık', '50 Mbps MPLS VPN')")
+    lokasyon_no: str | None = Field(
+        default=None,
+        description="Hizmet lokasyon numarası",
+        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
+    )
+    kapasite: str | None = Field(default=None, description="Hizmet kapasitesi (örn. '4000 GB', '50 Mbps', '77 Adet')")
+    liste_fiyati_vergi_haric: str | None = Field(default=None, description="Liste fiyatı vergiler hariç (örn. '6.870,617 TL')")
+    liste_fiyati_vergi_dahil: str | None = Field(default=None, description="Liste fiyatı vergiler dahil (örn. '8.244,74 TL')")
+    indirimli_fiyat_vergi_haric: str | None = Field(default=None, description="İndirimli fiyat vergiler hariç (örn. '5.840,024 TL')")
+    indirimli_fiyat_vergi_dahil: str | None = Field(default=None, description="İndirimli fiyat vergiler dahil (örn. '7.008,029 TL')")
+    hizmet_aciklamasi: str | None = Field(default=None, description="Hizmet detaylı açıklaması")
+
+
+class Donanimlar(BaseNode):
+    """Taahhüt kapsamında donanım ve yatırım bilgilerinin varlığını belirtir."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=True,
+        description="Predefined node - Donanım/yatırım bilgileri var mı?",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    bilgi_var: bool = Field(default=True, description="Donanım/yatırım bilgisi varsa True")
+
+
+class Donanim(BaseNode):
+    """Taahhüt kapsamında temin edilen donanımları tanımlar."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Taahhüt kapsamında temin edilen donanım/ekipman bilgileri",
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=Donanimlar,
+    )
+
+    hizmet_adi: str = Field(description="Donanımın kullanıldığı hizmet adı")
+    donanim_marka_model: str = Field(description="Donanım marka/model bilgisi")
+    adet: int | None = Field(default=None, description="Donanım adedi")
+    bedel: str | None = Field(default=None, description="Donanım bedeli")
+    aboneye_yansitilacak_bedel_vergi_haric: str | None = Field(default=None, description="Aboneye yansıtılacak bedel vergiler hariç")
+    aboneye_yansitilacak_bedel_vergi_dahil: str | None = Field(default=None, description="Aboneye yansıtılacak bedel vergiler dahil")
+    mulkiyet_durumu: str | None = Field(default=None, description="Donanımın mülkiyet durumu (Turkcell Superonline'a ait vs abone'ye ait)")
+
+
+class TaahhutIhlalKosullari(BaseNode):
+    """Taahhüt ihlali durumunda uygulanacak koşulları tanımlar."""
+
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        nodetag_index=False,
+        description="Taahhütten cayma, ihlal durumlarında uygulanacak koşul ve ceza bilgileri",
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=None,
+    )
+
+    ihlal_durumlari: str | None = Field(default=None, description="Taahhüt ihlali sayılan durumlar")
+    cayma_bedeli_hesaplama: str | None = Field(default=None, description="Cayma bedeli hesaplama yöntemi")
+    donanim_iade_kosullari: str | None = Field(default=None, description="Donanım iade koşulları")
+    ek_tazminat_hakki: str | None = Field(default=None, description="Hizmet sağlayıcının ek tazminat hakları")
+    odeme_kosullari: str | None = Field(default=None, description="Cayma bedeli ödeme koşulları")
+
+
+# Legacy nodes - kept for compatibility
 
 
 class AbonelikBedeli(BaseNode):
@@ -44,11 +174,25 @@ class AbonelikBedeli(BaseNode):
         how_to_extract=HowToExtract.CASE_0,
         nodeclass_to_be_created_automatically=None,
     )
-    abonelik_bedeli: float = Field(description="Ücret miktarı (sayı)")
+    abonelik_bedeli: float = Field(description="Toplam vergiler dahil ücret miktarı (sayı)")
     para_birimi: str = Field(default="TL", description="Para birimi (TL, USD, EUR vb.)")
     odeme_periyodu: str = Field(default="Aylık", description="Ödeme periyodu (Aylık, Yıllık vb.)")
     odeme_yontemi: str | None = Field(default=None, description="Ödeme yöntemi (otomatik ödeme, kredi kartı, havale vb.)")
     indirim_aciklamasi: str | None = Field(default=None, description="Kampanya / indirim varsa açıklaması")
+    taahhut_var_mi: bool | None = Field(default=None, description="Taahhüt var mı?")
+    taahhut_sonrasi_bedel: str | None = Field(default=None, description="Taahhüt süresi sonunda geçerli olacak abonelik bedeli (örn. '200 TL')")
+
+
+class CaymaBedeli(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        description="Taahhüt süresi dolmadan fesih hâlinde ödenecek cayma bedeli",
+        nodetag_index=False,
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=None,
+    )
+    cayma_bedeli: str = Field(description="Cayma bedeli miktarı ve para birimi")
+    bedelin_hesaplama_yontemi: str | None = Field(default=None, description="Cayma bedelinin hesaplanma yöntemi")
 
 
 class KurulumBedeli(BaseNode):
@@ -63,44 +207,9 @@ class KurulumBedeli(BaseNode):
     para_birimi: str = Field(default="TL", description="Para birimi (TL, USD, EUR vb.)")
 
 
-class CaymaBedeli(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="Taahhüt süresi dolmadan fesih hâlinde ödenecek cayma bedeli",
-        nodetag_index=False,
-        cardinality=False,
-        how_to_extract=HowToExtract.CASE_0,
-        nodeclass_to_be_created_automatically=None,
-    )
-    cayma_bedeli: str = Field(description="Cayma bedeli miktarı ve para birimi")
-
-
-class Ekipmanlar(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="Abonelik kapsamında kullanıcıya tahsis edilen cihaz/donanım var mı?",
-        nodetag_index=False,
-        cardinality=False,
-        how_to_extract=HowToExtract.CASE_1,
-        nodeclass_to_be_created_automatically=None,
-    )
-    ekipman_var: bool | None = Field(default=True, description="En az bir ekipman varsa True")
-
-
-class Ekipman(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="""Abonelik ile verilen modem, router, set‑top box, sayaç vb. gibi her bir cihazı tanımlar.""",
-        nodetag_index=False,
-        cardinality=True,
-        how_to_extract=HowToExtract.CASE_0,
-        nodeclass_to_be_created_automatically=Ekipmanlar,
-    )
-    ekipman_adi: str = Field(description="Cihaz adı / modeli (örn. 'ZXHN H298A Modem')")
-    seri_no: str | None = Field(default=None, description="Seri numarası veya IMEI vb.")
-    depozito: str | None = Field(default=None, description="Cihaz için alınan depozito / teminat (örn. '300 TL')")
-
-
 class HizmetSeviyesi(BaseNode):
     node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="""Hız, kota, kesintisiz hizmet garantisi gibi SLA / QoS parametrelerini tanımlar.""",
+        description="""Hız, kota, kesintisiz hizmet garantisi gibi parametreleri tanımlar.""",
         nodetag_index=False,
         cardinality=False,
         how_to_extract=HowToExtract.CASE_0,
@@ -109,21 +218,6 @@ class HizmetSeviyesi(BaseNode):
     hiz: str | None = Field(default=None, description="İnternet hızı (örn. '100 Mbps')")
     kota: str | None = Field(default=None, description="Aylık veri kotası / kWh vb.")
     kesinti_tazminati: str | None = Field(default=None, description="Hizmet kesintisi halinde uygulanacak tazminat")
-
-
-class AbonelikNumarasi(BaseNode):
-    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
-        description="""Hizmet sağlayıcı tarafından verilen abone / müşteri numarasını tanımlar.""",
-        nodetag_index=False,
-        cardinality=True,
-        how_to_extract=HowToExtract.CASE_0,
-        nodeclass_to_be_created_automatically=None,
-    )
-    abonelik_no: str = Field(
-        description="Abone / müşteri numarası",
-        config=NodeFieldConfig(index_type=NebulaIndexType.EXACT),
-    )
-    aciklama: str | None = Field(default=None, description="Numaranın geçtiği yer / ek açıklama")
 
 
 class FaturaBilgisi(BaseNode):
@@ -137,7 +231,6 @@ class FaturaBilgisi(BaseNode):
     fatura_kesim_tarihi: str | None = Field(default=None, description="Fatura kesim günü / tarihi")
     fatura_periyodu: str | None = Field(default="Aylık", description="Fatura periyodu (Aylık, 3-Aylık vb.)")
     fatura_adresi: Adres | None = Field(default=None, description="Faturaların gönderileceği adres")
-    e_fatura: bool | None = Field(default=None, description="E-fatura kullanılıyorsa True")
 
 
 class TaksitSecenegi(BaseNode):

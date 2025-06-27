@@ -1,0 +1,274 @@
+from typing import ClassVar
+
+from sw_onto_generation.base.base_relation import BaseRelation
+from sw_onto_generation.base.configs import RelationModelConfig
+from sw_onto_generation.common.common_nodes import GeneralDocumentInfo, Insan, Sirket
+from sw_onto_generation.root.lib_LegalContract.onto_kasko_police.nodes import (
+    Acente,
+    Arac,
+    Artirim,
+    Artirimlar,
+    EkHizmetler,
+    EkKloz,
+    EkKlozlar,
+    Istisna,
+    Istisnalar,
+    KaskoPolice,
+    SigortaPrimi,
+    Teminat,
+    Teminatlar,
+)
+
+
+class HasKaskoPolice(BaseRelation):
+    """Relates contract to insurance policy information."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşme ile kasko poliçesi bilgilerini ilişkilendirir. KaskoPolice node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: KaskoPolice
+
+
+class HasOncekiAcente(BaseRelation):
+    """Relates contract to previous insurance agent."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşme ile önceki kasko poliçesi acentesini ilişkilendirir. OncekiAcente node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Acente
+
+
+class HasAcente(BaseRelation):
+    """Relates contract to insurance agent."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşmede yer alan kasko poliçesi acentesini belirler. Poliçeyi düzenleyen acente veya broker bilgilerini Acente node'u ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Acente
+
+
+class HasSigortali(BaseRelation):
+    """Relates contract to insured person/entity."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
+        description="Sözleşmede yer alan sigortalıyı belirler. Sigortalı gerçek kişi veya kuruluş olabilir.",
+        ask_llm=True,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Insan | Sirket
+
+
+class HasDuzenleyenKisi(BaseRelation):
+    """Relates contract to insurance contractor."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
+        description="Sözleşmede yer alan kasko poliçesi düzenleyen acentede çalışan kişiyi belirler. Kasko poliçesi sözleşmesini yapan taraftır.",
+        ask_llm=True,
+    )
+
+    source_node: Acente
+    target_node: Insan
+
+
+class HasTrafikPoliceEttiren(BaseRelation):
+    """Relates contract to insurance contractor."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
+        description="Sözleşmede yer alan kasko poliçesi ettiren kisiyi belirler. Kasko poliçesi sözleşmesini yapan taraftır.",
+        ask_llm=True,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Insan | Sirket
+
+
+class HasTrafikPoliceSigortaSirketi(BaseRelation):
+    """Relates contract to insurance company."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
+        description="Sözleşmede yer alan kasko poliçesi veren şirketi belirler. Kasko poliçesi hizmetini veren sigorta şirketidir.",
+        ask_llm=True,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Sirket
+
+
+class HasEskiTrafikPoliceSigortaSirketi(BaseRelation):
+    """Relates contract to previous insurance company."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Sözleşme ile önceki kasko poliçesi veren şirketi ilişkilendirir. EskiSigortaSirketi node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Sirket
+
+
+class HasArac(BaseRelation):
+    """Relates contract to vehicle information."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko poliçesinde sigortalanan araç bilgilerini ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Arac
+
+
+class HasTeminatlar(BaseRelation):
+    """Relates contract to coverage scope."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko kapsamındaki teminatları ilişkilendirir. Teminatlar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Teminatlar
+
+
+class HasTeminat(BaseRelation):
+    """Relates contract to coverage scope."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko kapsamındaki teminatları ilişkilendirir. Teminat node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: Teminatlar
+    target_node: Teminat
+
+
+class HasSigortaPrimi(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko primi ve ödeme bilgilerini ilişkilendirir. SigortaPrimi node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: SigortaPrimi
+
+
+class HasAracSahibi(BaseRelation):
+    """Relates vehicle to its owner."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=True,
+        description="Aracın sahibini belirler. Araç ile sahip kişi/kuruluş arasındaki ilişkiyi tanımlar.",
+        ask_llm=True,
+    )
+
+    source_node: Insan | Sirket
+    target_node: Arac
+
+
+class HasArtirimlar(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko priminde uygulanan artırımları ilişkilendirir. Artirimlar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: Artirimlar
+
+
+class HasArtirim(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko priminde uygulanan artırımları ilişkilendirir. Artirim node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+
+    source_node: Artirimlar
+    target_node: Artirim
+
+
+class HasIstisnalar(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko priminde uygulanan istisnaları ilişkilendirir. Istisnalar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: Istisnalar
+
+
+class HasIstisna(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko priminde uygulanan istisnaları ilişkilendirir. Istisna node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: Istisnalar
+    target_node: Istisna
+
+
+class HasEkKlozlar(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko poliçesinde uygulanan ek klozları ilişkilendirir. EkKlozlar node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: EkKlozlar
+
+
+class HasEkKloz(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko poliçesinde uygulanan ek klozları ilişkilendirir. EkKloz node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: EkKlozlar
+    target_node: EkKloz
+
+
+class HasEkHizmetler(BaseRelation):
+    """Relates contract to insurance premium."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Kasko poliçesinde uygulanan ek hizmetleri ilişkilendirir. EkHizmetler node'u ile bağlantı sağlar.",
+        ask_llm=False,
+    )
+    source_node: GeneralDocumentInfo
+    target_node: EkHizmetler

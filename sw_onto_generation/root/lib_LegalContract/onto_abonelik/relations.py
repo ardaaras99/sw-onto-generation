@@ -7,12 +7,12 @@ from sw_onto_generation.base.configs import RelationModelConfig
 from sw_onto_generation.common.common_nodes import GeneralDocumentInfo, Insan, Sirket
 from sw_onto_generation.root.lib_LegalContract.onto_abonelik.nodes import (
     AbonelikBedeli,
-    AbonelikHizmeti,
-    AbonelikNumarasi,
     BildirimBilgisi,
     CaymaBedeli,
-    Ekipman,
-    Ekipmanlar,
+    Donanim,
+    Donanimlar,
+    EkSozlesme,
+    EkSozlesmeler,
     EkUcret,
     EkUcretler,
     FaturaBilgisi,
@@ -21,21 +21,117 @@ from sw_onto_generation.root.lib_LegalContract.onto_abonelik.nodes import (
     KampanyaBilgisi,
     KurulumBedeli,
     ServisKesinti,
+    TaahhutIhlalKosullari,
+    TaahhutKapsamiHizmet,
+    TaahhutKapsamiHizmetler,
+    Taahhutname,
     TaksitSecenegi,
 )
 
 
-class HasAbonelikHizmeti(BaseRelation):
-    """Sözleşme kapsamında sağlanan hizmeti belirtir."""
+# New Taahhütname relations
+class HasTaahhutname(BaseRelation):
+    """Sözleşme ile taahhütname bilgilerini ilişkilendirir."""
 
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         edge_index=False,
-        description="Sözleşme kapsamında sağlanan hizmeti AbonelikHizmeti düğümü ile ilişkilendirir.",
+        description="Sözleşme ile taahhütname bilgilerini Taahhutname düğümü ile ilişkilendirir.",
         ask_llm=False,
     )
 
     source_node: GeneralDocumentInfo
-    target_node: AbonelikHizmeti
+    target_node: Taahhutname
+
+
+class HasTaahhutEkSozlesmeler(BaseRelation):
+    """Taahhütname ile ek sözleşmelerin varlığını ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Taahhütname ile ek sözleşmelerin varlığını EkSozlesmeler düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: EkSozlesmeler
+
+
+class HasEkSozlesme(BaseRelation):
+    """Ek sözleşmeler ile tek tek ek sözleşmeleri ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="EkSozlesmeler düğümünü tek tek EkSozlesme öğeleriyle ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: EkSozlesmeler
+    target_node: EkSozlesme
+
+
+class HasTaahhutKapsamiHizmetler(BaseRelation):
+    """Taahhüt kapsamında hizmetlerin varlığını ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Taahhüt kapsamında hizmetlerin varlığını TaahhutKapsamiHizmetler düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: TaahhutKapsamiHizmetler
+
+
+class HasTaahhutKapsamiHizmet(BaseRelation):
+    """Taahhüt kapsamı hizmetler ile tek tek hizmetleri ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="TaahhutKapsamiHizmetler düğümünü tek tek TaahhutKapsamiHizmet öğeleriyle ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: TaahhutKapsamiHizmetler
+    target_node: TaahhutKapsamiHizmet
+
+
+class HasDonanimlar(BaseRelation):
+    """Donanım bilgilerinin varlığını ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Donanım bilgilerinin varlığını Donanimlar düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: Donanimlar
+
+
+class HasDonanim(BaseRelation):
+    """Donanımlar ile tek tek donanım bilgilerini ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Donanimlar düğümünü tek tek Donanim öğeleriyle ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: Donanimlar
+    target_node: Donanim
+
+
+class HasTaahhutIhlalKosullari(BaseRelation):
+    """Taahhüt ihlal koşullarını ilişkilendirir."""
+
+    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
+        edge_index=False,
+        description="Taahhüt ihlal koşullarını TaahhutIhlalKosullari düğümü ile ilişkilendirir.",
+        ask_llm=False,
+    )
+
+    source_node: GeneralDocumentInfo
+    target_node: TaahhutIhlalKosullari
 
 
 class HasAbone(BaseRelation):
@@ -97,17 +193,6 @@ class HasCaymaBedeli(BaseRelation):
     target_node: CaymaBedeli
 
 
-class HasAbonelikEkipmanlar(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Sözleşmede ekipman tahsisi olup olmadığını Ekipmanlar düğümü ile ilişkilendirir.",
-        ask_llm=False,
-    )
-
-    source_node: GeneralDocumentInfo
-    target_node: Ekipmanlar
-
-
 class HasHizmetSeviyesi(BaseRelation):
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         edge_index=False,
@@ -117,17 +202,6 @@ class HasHizmetSeviyesi(BaseRelation):
 
     source_node: GeneralDocumentInfo
     target_node: HizmetSeviyesi
-
-
-class HasAbonelikNumarasi(BaseRelation):
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Abonelik / müşteri numarasını AbonelikNumarasi düğümü ile ilişkilendirir.",
-        ask_llm=False,
-    )
-
-    source_node: GeneralDocumentInfo
-    target_node: AbonelikNumarasi
 
 
 class HasFaturaBilgisi(BaseRelation):
@@ -196,22 +270,7 @@ class HasServisKesinti(BaseRelation):
     target_node: ServisKesinti
 
 
-class HasEkipman(BaseRelation):
-    """Ekipmanlar düğümünden tek tek ekipman öğelerine ilişki."""
-
-    relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
-        edge_index=False,
-        description="Ekipmanlar düğümünü tek tek Ekipman öğeleriyle ilişkilendirir.",
-        ask_llm=False,
-    )
-
-    source_node: Ekipmanlar
-    target_node: Ekipman
-
-
 class HasTaksitSecenegi(BaseRelation):
-    """AbonelikBedeli düğümünden taksit seçenekleri düğümüne ilişki."""
-
     relation_config: ClassVar[RelationModelConfig] = RelationModelConfig(
         edge_index=False,
         description="Abonelik bedelini TaksitSecenegi düğümü ile ilişkilendirir.",
