@@ -3,12 +3,7 @@ from typing import ClassVar
 from pydantic import Field
 
 from sw_onto_generation.base.base_node import BaseNode
-from sw_onto_generation.base.configs import (
-    HowToExtract,
-    NebulaIndexType,
-    NodeFieldConfig,
-    NodeModelConfig,
-)
+from sw_onto_generation.base.configs import HowToExtract, NebulaIndexType, NodeFieldConfig, NodeModelConfig
 from sw_onto_generation.common.common_nodes import Adres
 
 
@@ -54,6 +49,7 @@ class AbonelikBedeli(BaseNode):
     odeme_yontemi: str | None = Field(default=None, description="Ödeme yöntemi (otomatik ödeme, kredi kartı, havale vb.)")
     indirim_aciklamasi: str | None = Field(default=None, description="Kampanya / indirim varsa açıklaması")
     taahhut_var_mi: bool | None = Field(default=None, description="Taahhüt var mı?")
+    taahhut_sonrasi_bedel: str | None = Field(default=None, description="Taahhüt süresi sonunda geçerli olacak abonelik bedeli (örn. '200 TL')")
 
 
 class KurulumBedeli(BaseNode):
@@ -219,3 +215,28 @@ class ServisKesinti(BaseNode):
     kesinti_sartlari: str | None = Field(default=None, description="Kesinti gerçekleştiğinde geçerli şartlar")
     tazminat_miktari: str | None = Field(default=None, description="Kesinti durumunda ödenecek tazminat (örn. '1 günlük ücret')")
     para_birimi: str | None = Field(default=None, description="Tazminat para birimi (TL, USD, EUR vb.)")
+
+
+class EkSozlesmeler(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        description="""Abonelikle ilişkili ek sözleşmeleri tanımlar.""",
+        nodetag_index=False,
+        cardinality=False,
+        how_to_extract=HowToExtract.CASE_1,
+        nodeclass_to_be_created_automatically=None,
+    )
+    ek_sozlesme_var: bool | None = Field(default=True, description="En az bir ek sözleşme varsa True")
+
+
+class EkSozlesme(BaseNode):
+    node_config: ClassVar[NodeModelConfig] = NodeModelConfig(
+        description="""Abonelikle ilişkili her bir ek sözleşmeyi tanımlar.""",
+        nodetag_index=False,
+        cardinality=True,
+        how_to_extract=HowToExtract.CASE_0,
+        nodeclass_to_be_created_automatically=EkSozlesmeler,
+    )
+    sozlesme_adi: str = Field(description="Ek Sözleşme adı (örn. 'Ekstra Veri Paketi Sözleşmesi')")
+    sozlesme_tarihi: str | None = Field(default=None, description="Ek Sözleşmenin imzalandığı tarih")
+    sozlesme_suresi: str | None = Field(default=None, description="Ek Sözleşmenin geçerli olduğu süre (örn. '12 Ay')")
+    sozlesme_aciklamasi: str | None = Field(default=None, description="Ek Sözleşmenin kapsamı ve şartları")
